@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.3.2` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.4.0` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,14 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.3.2` (Rilis Saat Ini)
+### Versi `v1.4.0` (Rilis Saat Ini)
+* **Dukungan Multi-Tab Lengkap di Android**:
+  - **Tombol Tambah Tab Cepat (`+`)**: Buka tab baru instan dalam 1 kali sentuh di toolbar atas HP.
+  - **Penghitung & Pengalih Tab (`[ 1 ]`)**: Menampilkan jumlah tab yang aktif dan membuka menu pengalih tab (*Tab Switcher*) untuk berpindah atau menutup tab tertentu.
+  - **Otomatis Tab Baru untuk Pop-Up**: Tautan website dengan `target="_blank"` atau jendela baru otomatis membuka tab mandiri tanpa menutup halaman sebelumnya.
+  - **Navigasi Cerdas Tombol Kembali**: Menutup tab aktif saat tombol Back ditekan jika halaman sudah di riwayat awal.
+
+### Versi `v1.3.2`
 * **Pencegahan Force-Close & Resolusi Assembly Otomatis**: Menambahkan `AssemblyResolve` otomatis dan pre-flight check pada startup Windows sehingga aplikasi tidak akan lagi force-close diam-diam jika pengguna memindahkan file executable ke direktori baru tanpa menyertakan folder `lib/`.
 * **Paket Rilis Lengkap Windows ZIP**: Menyediakan file paket `NovaBrowser-Windows-Portable-v1.3.2.zip` pada GitHub Releases yang langsung berisi seluruh dependensi (`NovaBrowser.exe`, `lib/`, `config`, dan ikon) sehingga siap pakai tanpa konfigurasi manual.
 

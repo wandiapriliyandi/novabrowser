@@ -12,75 +12,97 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="#1E293B"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp">
 
         <Button
             android:id="@+id/btnBack"
-            android:layout_width="36dp"
+            android:layout_width="32dp"
             android:layout_height="36dp"
             android:text="◀"
             android:textColor="#FFFFFF"
             android:background="#334155"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <EditText
             android:id="@+id/txtUrl"
             android:layout_width="0dp"
             android:layout_height="38dp"
             android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
             android:background="#0F172A"
             android:hint="Ketik URL / cari di sini..."
             android:textColorHint="#94A3B8"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:textSize="13sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:singleLine="true"
             android:imeOptions="actionGo"
             android:inputType="textUri" />
 
         <Button
             android:id="@+id/btnClear"
-            android:layout_width="30dp"
+            android:layout_width="28dp"
             android:layout_height="36dp"
             android:text="✕"
             android:textColor="#94A3B8"
             android:background="#1E293B"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:visibility="gone"
-            android:layout_marginEnd="4dp" />
+            android:layout_marginEnd="3dp" />
+
+        <Button
+            android:id="@+id/btnNewTab"
+            android:layout_width="30dp"
+            android:layout_height="36dp"
+            android:text="+"
+            android:textColor="#38BDF8"
+            android:background="#334155"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginEnd="3dp" />
+
+        <Button
+            android:id="@+id/btnTabs"
+            android:layout_width="32dp"
+            android:layout_height="36dp"
+            android:text="1"
+            android:textColor="#FFFFFF"
+            android:background="#0284C7"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:layout_marginEnd="3dp" />
 
         <Button
             android:id="@+id/btnReload"
-            android:layout_width="34dp"
+            android:layout_width="30dp"
             android:layout_height="36dp"
             android:text="↻"
             android:textColor="#FFFFFF"
             android:background="#334155"
-            android:textSize="14sp"
-            android:layout_marginEnd="4dp" />
+            android:textSize="13sp"
+            android:layout_marginEnd="3dp" />
 
         <Button
             android:id="@+id/btnUpdate"
-            android:layout_width="34dp"
+            android:layout_width="30dp"
             android:layout_height="36dp"
             android:text="📥"
             android:textColor="#34D399"
             android:background="#334155"
-            android:textSize="13sp"
-            android:layout_marginEnd="4dp" />
+            android:textSize="12sp"
+            android:layout_marginEnd="3dp" />
 
         <Button
             android:id="@+id/btnDesktop"
-            android:layout_width="34dp"
+            android:layout_width="30dp"
             android:layout_height="36dp"
             android:text="💻"
             android:textColor="#FFFFFF"
             android:background="#334155"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
     <!-- Progress Bar -->
@@ -92,9 +114,9 @@
         android:progressDrawable="@android:drawable/progress_horizontal"
         android:visibility="gone" />
 
-    <!-- Web View Core -->
-    <WebView
-        android:id="@+id/webView"
+    <!-- Multi-Tab WebView Container -->
+    <FrameLayout
+        android:id="@+id/webViewContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

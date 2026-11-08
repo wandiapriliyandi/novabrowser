@@ -1,34 +1,71 @@
 package com.novalite.browser;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends Activity {
 
-    private WebView webView;
+    public static class TabModel {
+        public String id;
+        public String title;
+        public String url;
+        public WebView webView;
+
+        public TabModel(String id, String title, String url, WebView webView) {
+            this.id = id;
+            this.title = title;
+            this.url = url;
+            this.webView = webView;
+        }
+    }
+
+    private FrameLayout webViewContainer;
     private EditText txtUrl;
     private ProgressBar progressBar;
     private Button btnBack;
     private Button btnClear;
+    private Button btnNewTab;
+    private Button btnTabs;
     private Button btnReload;
     private Button btnUpdate;
     private Button btnDesktop;
+
+    private final List<TabModel> tabs = new ArrayList<>();
+    private int activeTabIndex = -1;
 
     private boolean isDesktopMode = false;
     private String defaultUserAgent = "";
@@ -39,29 +76,50 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         initViews();
-        configureWebView();
         setupListeners();
 
-        // Buka halaman beranda awal
-        loadHomepage();
+        // Buka tab pertama
+        createNewTab("novalite://newtab", true);
 
         // Cek pembaruan APK otomatis di latar belakang setelah 3.5 detik
-        webView.postDelayed(() -> checkForUpdates(false), 3500);
+        webViewContainer.postDelayed(() -> checkForUpdates(false), 3500);
     }
 
     private void initViews() {
-        webView = findViewById(R.id.webView);
+        webViewContainer = findViewById(R.id.webViewContainer);
         txtUrl = findViewById(R.id.txtUrl);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
         btnClear = findViewById(R.id.btnClear);
+        btnNewTab = findViewById(R.id.btnNewTab);
+        btnTabs = findViewById(R.id.btnTabs);
         btnReload = findViewById(R.id.btnReload);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnDesktop = findViewById(R.id.btnDesktop);
     }
 
-    private void configureWebView() {
-        WebSettings settings = webView.getSettings();
+    private WebView getActiveWebView() {
+        if (activeTabIndex >= 0 && activeTabIndex < tabs.size()) {
+            return tabs.get(activeTabIndex).webView;
+        }
+        return null;
+    }
+
+    private TabModel getActiveTab() {
+        if (activeTabIndex >= 0 && activeTabIndex < tabs.size()) {
+            return tabs.get(activeTabIndex);
+        }
+        return null;
+    }
+
+    public TabModel createNewTab(String url, boolean switchToIt) {
+        WebView wv = new WebView(this);
+        wv.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+
+        WebSettings settings = wv.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
@@ -71,56 +129,201 @@ public class MainActivity extends Activity {
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
+        settings.setSupportMultipleWindows(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
 
-        // Simpan Sandi & Autofill
         settings.setSavePassword(true);
         settings.setSaveFormData(true);
+        wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
-        // Hardware Acceleration
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
-        // Aktifkan Remote Chrome DevTools Debugging (Bisa di-inspect via PC di chrome://inspect)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
+        if (defaultUserAgent.isEmpty()) {
+            defaultUserAgent = settings.getUserAgentString();
         }
 
-        defaultUserAgent = settings.getUserAgentString();
+        if (isDesktopMode) {
+            String desktopUa = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
+            settings.setUserAgentString(desktopUa);
+        } else {
+            settings.setUserAgentString(defaultUserAgent);
+        }
 
-        webView.setWebViewClient(new WebViewClient() {
+        String tabId = UUID.randomUUID().toString();
+        TabModel tab = new TabModel(tabId, "Tab Baru", url, wv);
+        tabs.add(tab);
+        webViewContainer.addView(wv);
+
+        wv.setWebViewClient(new WebViewClient() {
             @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                progressBar.setVisibility(View.VISIBLE);
-                txtUrl.setText(url);
+            public void onPageStarted(WebView view, String pageUrl, Bitmap favicon) {
+                super.onPageStarted(view, pageUrl, favicon);
+                tab.url = pageUrl;
+                if (getActiveTab() == tab) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    txtUrl.setText(pageUrl.equals("novalite://newtab") ? "" : pageUrl);
+                }
             }
 
             @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                progressBar.setVisibility(View.GONE);
-                txtUrl.setText(url);
+            public void onPageFinished(WebView view, String pageUrl) {
+                super.onPageFinished(view, pageUrl);
+                tab.url = pageUrl;
+                if (getActiveTab() == tab) {
+                    progressBar.setVisibility(View.GONE);
+                    txtUrl.setText(pageUrl.equals("novalite://newtab") ? "" : pageUrl);
+                }
             }
         });
 
-        webView.setWebChromeClient(new WebChromeClient() {
+        wv.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                progressBar.setProgress(newProgress);
+                if (getActiveTab() == tab) {
+                    progressBar.setProgress(newProgress);
+                }
+            }
+
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                if (title != null && !title.isEmpty()) {
+                    tab.title = title;
+                }
+            }
+
+            @Override
+            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                TabModel popupTab = createNewTab("about:blank", true);
+                WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                transport.setWebView(popupTab.webView);
+                resultMsg.sendToTarget();
+                return true;
             }
         });
+
+        if (url == null || url.isEmpty() || url.equals("novalite://newtab")) {
+            loadHomepage(wv);
+        } else {
+            wv.loadUrl(url);
+        }
+
+        if (switchToIt) {
+            switchToTab(tabs.size() - 1);
+        } else {
+            wv.setVisibility(View.GONE);
+            updateTabsButtonCount();
+        }
+
+        return tab;
+    }
+
+    public void switchToTab(int index) {
+        if (index < 0 || index >= tabs.size()) return;
+
+        for (int i = 0; i < tabs.size(); i++) {
+            if (i == index) {
+                tabs.get(i).webView.setVisibility(View.VISIBLE);
+            } else {
+                tabs.get(i).webView.setVisibility(View.GONE);
+            }
+        }
+
+        activeTabIndex = index;
+        TabModel current = tabs.get(index);
+        String currentUrl = current.url;
+        txtUrl.setText(currentUrl.equals("novalite://newtab") ? "" : currentUrl);
+        updateTabsButtonCount();
+    }
+
+    public void closeTab(int index) {
+        if (index < 0 || index >= tabs.size()) return;
+
+        TabModel toClose = tabs.get(index);
+        webViewContainer.removeView(toClose.webView);
+        toClose.webView.destroy();
+        tabs.remove(index);
+
+        if (tabs.isEmpty()) {
+            createNewTab("novalite://newtab", true);
+        } else if (activeTabIndex >= tabs.size()) {
+            switchToTab(tabs.size() - 1);
+        } else if (activeTabIndex == index) {
+            switchToTab(Math.max(0, index - 1));
+        } else {
+            if (activeTabIndex > index) {
+                activeTabIndex--;
+            }
+            updateTabsButtonCount();
+        }
+    }
+
+    private void updateTabsButtonCount() {
+        btnTabs.setText(String.valueOf(tabs.size()));
+    }
+
+    private void showTabSwitcher() {
+        if (tabs.isEmpty()) return;
+
+        String[] tabTitles = new String[tabs.size()];
+        for (int i = 0; i < tabs.size(); i++) {
+            TabModel t = tabs.get(i);
+            String prefix = (i == activeTabIndex) ? "▶ " : "• ";
+            String title = (t.title != null && !t.title.isEmpty()) ? t.title : "Tab " + (i + 1);
+            tabTitles[i] = prefix + title + "\n   " + (t.url != null ? t.url : "");
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("📑 Multi-Tab (" + tabs.size() + " Tab Terbuka)");
+
+        builder.setItems(tabTitles, (dialog, which) -> {
+            // Pilih opsi untuk tab yang diklik: Beralih atau Tutup
+            showTabActionDialog(which);
+        });
+
+        builder.setPositiveButton("➕ Buka Tab Baru", (dialog, which) -> {
+            createNewTab("novalite://newtab", true);
+        });
+
+        builder.setNegativeButton("Tutup", null);
+        builder.show();
+    }
+
+    private void showTabActionDialog(int index) {
+        TabModel t = tabs.get(index);
+        String title = (t.title != null && !t.title.isEmpty()) ? t.title : "Tab " + (index + 1);
+
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage("URL: " + t.url)
+                .setPositiveButton("Beralih ke Tab Ini", (d, w) -> switchToTab(index))
+                .setNeutralButton("✕ Tutup Tab", (d, w) -> closeTab(index))
+                .setNegativeButton("Kembali", (d, w) -> showTabSwitcher())
+                .show();
     }
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> {
-            if (webView.canGoBack()) {
-                webView.goBack();
+            WebView wv = getActiveWebView();
+            if (wv != null && wv.canGoBack()) {
+                wv.goBack();
+            } else if (tabs.size() > 1) {
+                closeTab(activeTabIndex);
             } else {
                 Toast.makeText(this, "Sudah di halaman awal", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnReload.setOnClickListener(v -> webView.reload());
+        btnNewTab.setOnClickListener(v -> {
+            createNewTab("novalite://newtab", true);
+            Toast.makeText(this, "Tab baru dibuka", Toast.LENGTH_SHORT).show();
+        });
+
+        btnTabs.setOnClickListener(v -> showTabSwitcher());
+
+        btnReload.setOnClickListener(v -> {
+            WebView wv = getActiveWebView();
+            if (wv != null) wv.reload();
+        });
 
         btnUpdate.setOnClickListener(v -> {
             Toast.makeText(this, "Memeriksa pembaruan APK...", Toast.LENGTH_SHORT).show();
@@ -159,7 +362,8 @@ public class MainActivity extends Activity {
     }
 
     private void navigateTo(String input) {
-        if (input == null || input.isEmpty()) return;
+        WebView wv = getActiveWebView();
+        if (wv == null || input == null || input.isEmpty()) return;
 
         input = input.trim();
         String url;
@@ -171,29 +375,36 @@ public class MainActivity extends Activity {
         } else if (input.matches("^[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,}(:\\d+)?(/.*)?$")) {
             url = "https://" + input;
         } else {
-            url = "https://www.google.com/search?q=" + java.net.URLEncoder.encode(input);
+            try {
+                url = "https://www.google.com/search?q=" + URLEncoder.encode(input, "UTF-8");
+            } catch (Exception e) {
+                url = "https://www.google.com/search?q=" + input;
+            }
         }
 
-        webView.loadUrl(url);
+        wv.loadUrl(url);
     }
 
     private void toggleDesktopMode() {
         isDesktopMode = !isDesktopMode;
-        WebSettings settings = webView.getSettings();
-        if (isDesktopMode) {
-            String desktopUa = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
-            settings.setUserAgentString(desktopUa);
-            btnDesktop.setText("📱");
-            Toast.makeText(this, "Mode Desktop Aktif (User-Agent PC)", Toast.LENGTH_SHORT).show();
-        } else {
-            settings.setUserAgentString(defaultUserAgent);
-            btnDesktop.setText("💻");
-            Toast.makeText(this, "Mode Mobile Aktif", Toast.LENGTH_SHORT).show();
+        WebView wv = getActiveWebView();
+        if (wv != null) {
+            WebSettings settings = wv.getSettings();
+            if (isDesktopMode) {
+                String desktopUa = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
+                settings.setUserAgentString(desktopUa);
+                btnDesktop.setText("📱");
+                Toast.makeText(this, "Mode Desktop Aktif (User-Agent PC)", Toast.LENGTH_SHORT).show();
+            } else {
+                settings.setUserAgentString(defaultUserAgent);
+                btnDesktop.setText("💻");
+                Toast.makeText(this, "Mode Mobile Aktif", Toast.LENGTH_SHORT).show();
+            }
+            wv.reload();
         }
-        webView.reload();
     }
 
-    private void loadHomepage() {
+    private void loadHomepage(WebView wv) {
         String html = "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "<style>body{background:#0F172A;color:#fff;font-family:sans-serif;text-align:center;padding:40px 20px;}" +
                 "h1{color:#38BDF8;font-size:28px;margin-bottom:6px;}" +
@@ -201,14 +412,14 @@ public class MainActivity extends Activity {
                 ".btn{display:inline-block;background:#1E293B;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;margin:6px;border:1px solid #334155;}" +
                 "</style></head><body>" +
                 "<h1>NovaBrowser</h1>" +
-                "<p>Edisi Android &bull; Cepat &bull; Hemat Baterai &bull; Bersih</p>" +
+                "<p>Edisi Android &bull; Multi-Tab &bull; Cepat &bull; Hemat Baterai</p>" +
                 "<div>" +
                 "<a href='https://google.com' class='btn'>🔍 Google</a>" +
                 "<a href='https://github.com' class='btn'>🐙 GitHub</a>" +
                 "<a href='https://news.google.com' class='btn'>📰 Berita</a>" +
                 "</div>" +
                 "</body></html>";
-        webView.loadDataWithBaseURL("novalite://newtab", html, "text/html", "UTF-8", null);
+        wv.loadDataWithBaseURL("novalite://newtab", html, "text/html", "UTF-8", null);
     }
 
     private void checkForUpdates(boolean isManual) {
@@ -219,8 +430,8 @@ public class MainActivity extends Activity {
 
             // 1. Coba periksa via GitHub Releases API Resmi
             try {
-                java.net.URL url = new java.net.URL("https://api.github.com/repos/wandiapriliyandi/novabrowser/releases/latest");
-                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                URL url = new URL("https://api.github.com/repos/wandiapriliyandi/novabrowser/releases/latest");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(6000);
                 conn.setReadTimeout(6000);
                 conn.setRequestMethod("GET");
@@ -228,7 +439,7 @@ public class MainActivity extends Activity {
                 conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
 
                 if (conn.getResponseCode() == 200) {
-                    java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                     StringBuilder sb = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -236,15 +447,15 @@ public class MainActivity extends Activity {
                     }
                     reader.close();
 
-                    org.json.JSONObject json = new org.json.JSONObject(sb.toString());
+                    JSONObject json = new JSONObject(sb.toString());
                     latestVersion = json.optString("tag_name", "").replace("v", "");
                     changelog = json.optString("body", "Pembaruan GitHub Release terbaru.");
 
                     // Cari asset file APK
-                    org.json.JSONArray assets = json.optJSONArray("assets");
+                    JSONArray assets = json.optJSONArray("assets");
                     if (assets != null) {
                         for (int i = 0; i < assets.length(); i++) {
-                            org.json.JSONObject asset = assets.getJSONObject(i);
+                            JSONObject asset = assets.getJSONObject(i);
                             String assetName = asset.optString("name", "");
                             if (assetName.endsWith(".apk")) {
                                 apkUrl = asset.optString("browser_download_url", apkUrl);
@@ -258,15 +469,15 @@ public class MainActivity extends Activity {
             // 2. Fallback jika GitHub API rate-limited
             if (latestVersion == null || latestVersion.isEmpty()) {
                 try {
-                    java.net.URL url = new java.net.URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
-                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                    URL url = new URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setConnectTimeout(6000);
                     conn.setReadTimeout(6000);
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
 
                     if (conn.getResponseCode() == 200) {
-                        java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                         StringBuilder sb = new StringBuilder();
                         String line;
                         while ((line = reader.readLine()) != null) {
@@ -274,7 +485,7 @@ public class MainActivity extends Activity {
                         }
                         reader.close();
 
-                        org.json.JSONObject json = new org.json.JSONObject(sb.toString());
+                        JSONObject json = new JSONObject(sb.toString());
                         latestVersion = json.optString("version", "");
                         changelog = json.optString("changelog", "Pembaruan stabilitas dan performa.");
                         apkUrl = json.optString("apkDownloadUrl", apkUrl);
@@ -323,12 +534,12 @@ public class MainActivity extends Activity {
     }
 
     private void showUpdateDialog(String newVersion, String changelog, String apkUrl) {
-        new android.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle("🚀 Pembaruan APK Tersedia (v" + newVersion + ")")
                 .setMessage("Versi terbaru NovaBrowser telah dirilis!\n\nCatatan Rilis:\n" + changelog + "\n\nUnduh file APK terbaru sekarang?")
                 .setPositiveButton("Unduh APK", (dialog, which) -> {
                     try {
-                        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(apkUrl));
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl));
                         startActivity(intent);
                     } catch (Exception ex) {
                         Toast.makeText(this, "Gagal membuka tautan unduhan: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
@@ -341,33 +552,42 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (webView != null) {
-            webView.onPause();
-            webView.pauseTimers(); // Membekukan animasi dan timer JS di latar belakang untuk menghemat baterai
+        WebView wv = getActiveWebView();
+        if (wv != null) {
+            wv.onPause();
+            wv.pauseTimers();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (webView != null) {
-            webView.onResume();
-            webView.resumeTimers();
+        WebView wv = getActiveWebView();
+        if (wv != null) {
+            wv.onResume();
+            wv.resumeTimers();
         }
     }
 
     @Override
     protected void onDestroy() {
-        if (webView != null) {
-            webView.destroy();
+        for (TabModel t : tabs) {
+            if (t.webView != null) {
+                t.webView.destroy();
+            }
         }
+        tabs.clear();
         super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
+        WebView wv = getActiveWebView();
+        if (wv != null && wv.canGoBack()) {
+            wv.goBack();
+        } else if (tabs.size() > 1) {
+            closeTab(activeTabIndex);
+            Toast.makeText(this, "Tab ditutup", Toast.LENGTH_SHORT).show();
         } else {
             super.onBackPressed();
         }

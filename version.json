@@ -1,8 +1,8 @@
 {
-  "version": "1.3.2",
-  "apkVersionCode": 13,
+  "version": "1.4.0",
+  "apkVersionCode": 14,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowser.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.3.2: Penanganan cerdas dependensi WebView2 (AssemblyResolve otomatis), pencegahan force-close diam-diam jika folder lib belum disalin, dan paket rilis Windows Portable ZIP lengkap."
+  "changelog": "v1.4.0: Fitur Multi-Tab lengkap di HP Android (tombol counter tab, pembuka tab baru '+', dialog switcher tab, dan auto pop-up tab baru)."
 }
