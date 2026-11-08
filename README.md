@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.2.3` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.2.4` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.2.4-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,8 +10,13 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.2.3` (Rilis Saat Ini)
-* **Pembeda File Unduhan Versi Baru vs Lama**: File download APK Android otomatis diberi nama versi rilis lengkap (`NovaBrowser-v1.2.3.apk`) dan artifact GitHub Actions `NovaBrowser-v1.2.3-APK` agar pengguna dapat membedakan file terupdate dengan mudah.
+### Versi `v1.2.4` (Rilis Saat Ini)
+* **Pembaruan APK Otomatis di HP (In-App APK Updater)**: Menambahkan pendeteksian otomatis pembaruan APK saat aplikasi dibuka di Android dan tombol manual `[📥]` di toolbar untuk memeriksa rilis APK baru serta mengunduh file versi terbaru langsung dari HP.
+* **Tampilan Bersih di HP (Hapus Mode Dev)**: Menghapus toolbar developer dan floating console di HP Android agar peramban menjadi sangat bersih, ringan, dan nyaman untuk pengguna mobile.
+* **Tombol Cepat Hapus URL di HP (`✕`)**: Menambahkan tombol `✕` instan di samping kolom URL HP untuk menghapus alamat dalam 1 kali sentuhan.
+
+### Versi `v1.2.3`
+* **Pembeda File Unduhan Versi Baru vs Lama**: File download APK Android otomatis diberi nama versi rilis lengkap (`NovaBrowser-v1.2.4.apk`) dan artifact GitHub Actions `NovaBrowser-v1.2.4-APK` agar pengguna dapat membedakan file terupdate dengan mudah.
 * **Nama Aplikasi Tetap Bersih**: Nama aplikasi saat terpasang di perangkat Android tetap bersih sebagai **NovaBrowser**.
 
 ### Versi `v1.2.1`

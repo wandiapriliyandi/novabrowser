@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -23,12 +25,12 @@ public class MainActivity extends Activity {
     private EditText txtUrl;
     private ProgressBar progressBar;
     private Button btnBack;
-    private Button btnDev;
-    private Button btnDesktop;
+    private Button btnClear;
     private Button btnReload;
+    private Button btnUpdate;
+    private Button btnDesktop;
 
     private boolean isDesktopMode = false;
-    private boolean isDevToolsInjected = false;
     private String defaultUserAgent = "";
 
     @Override
@@ -42,6 +44,9 @@ public class MainActivity extends Activity {
 
         // Buka halaman beranda awal
         loadHomepage();
+
+        // Cek pembaruan APK otomatis di latar belakang setelah 3.5 detik
+        webView.postDelayed(() -> checkForUpdates(false), 3500);
     }
 
     private void initViews() {
@@ -49,9 +54,10 @@ public class MainActivity extends Activity {
         txtUrl = findViewById(R.id.txtUrl);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
-        btnDev = findViewById(R.id.btnDev);
-        btnDesktop = findViewById(R.id.btnDesktop);
+        btnClear = findViewById(R.id.btnClear);
         btnReload = findViewById(R.id.btnReload);
+        btnUpdate = findViewById(R.id.btnUpdate);
+        btnDesktop = findViewById(R.id.btnDesktop);
     }
 
     private void configureWebView() {
@@ -86,7 +92,6 @@ public class MainActivity extends Activity {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setVisibility(View.VISIBLE);
                 txtUrl.setText(url);
-                isDevToolsInjected = false;
             }
 
             @Override
@@ -117,9 +122,31 @@ public class MainActivity extends Activity {
 
         btnReload.setOnClickListener(v -> webView.reload());
 
+        btnUpdate.setOnClickListener(v -> {
+            Toast.makeText(this, "Memeriksa pembaruan APK...", Toast.LENGTH_SHORT).show();
+            checkForUpdates(true);
+        });
+
         btnDesktop.setOnClickListener(v -> toggleDesktopMode());
 
-        btnDev.setOnClickListener(v -> toggleMobileDevTools());
+        btnClear.setOnClickListener(v -> {
+            txtUrl.setText("");
+            txtUrl.requestFocus();
+            btnClear.setVisibility(View.GONE);
+        });
+
+        txtUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                btnClear.setVisibility(s != null && s.length() > 0 ? View.VISIBLE : View.GONE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         txtUrl.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO ||
@@ -166,25 +193,6 @@ public class MainActivity extends Activity {
         webView.reload();
     }
 
-    private void toggleMobileDevTools() {
-        if (!isDevToolsInjected) {
-            // Injeksi Eruda Mobile DevTools (Console, Elements, Network, Storage) langsung ke halaman web
-            String jsCode = "javascript:(function () { " +
-                    "if (window.eruda) { window.eruda.show(); return; } " +
-                    "var script = document.createElement('script'); " +
-                    "script.src='https://cdn.jsdelivr.net/npm/eruda'; " +
-                    "script.onload = function () { eruda.init(); eruda.show(); }; " +
-                    "document.body.appendChild(script); " +
-                    "})();";
-            webView.evaluateJavascript(jsCode, null);
-            isDevToolsInjected = true;
-            Toast.makeText(this, "🛠️ DevTools Mobile (Eruda) Berhasil Dimuat!", Toast.LENGTH_SHORT).show();
-        } else {
-            webView.evaluateJavascript("javascript:if(window.eruda){ eruda.hide(); }", null);
-            isDevToolsInjected = false;
-        }
-    }
-
     private void loadHomepage() {
         String html = "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "<style>body{background:#0F172A;color:#fff;font-family:sans-serif;text-align:center;padding:40px 20px;}" +
@@ -192,18 +200,89 @@ public class MainActivity extends Activity {
                 "p{color:#94A3B8;font-size:14px;margin-bottom:24px;}" +
                 ".btn{display:inline-block;background:#1E293B;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;margin:6px;border:1px solid #334155;}" +
                 "</style></head><body>" +
-                "<h1>NovaLite Browser</h1>" +
-                "<p>Edisi Android &bull; Sangat Ringan &bull; Mode Developer</p>" +
+                "<h1>NovaBrowser</h1>" +
+                "<p>Edisi Android &bull; Cepat &bull; Hemat Baterai &bull; Bersih</p>" +
                 "<div>" +
                 "<a href='https://google.com' class='btn'>🔍 Google</a>" +
                 "<a href='https://github.com' class='btn'>🐙 GitHub</a>" +
-                "<a href='http://10.0.2.2:8000' class='btn'>💻 Localhost PC</a>" +
-                "</div>" +
-                "<div style='margin-top:30px;color:#64748B;font-size:12px;'>" +
-                "Klik tombol 🛠️ di atas untuk membuka DevTools Console di HP!" +
+                "<a href='https://news.google.com' class='btn'>📰 Berita</a>" +
                 "</div>" +
                 "</body></html>";
         webView.loadDataWithBaseURL("novalite://newtab", html, "text/html", "UTF-8", null);
+    }
+
+    private void checkForUpdates(boolean isManual) {
+        new Thread(() -> {
+            try {
+                java.net.URL url = new java.net.URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(6000);
+                conn.setReadTimeout(6000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
+
+                if (conn.getResponseCode() == 200) {
+                    java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    reader.close();
+
+                    org.json.JSONObject json = new org.json.JSONObject(sb.toString());
+                    String latestVersion = json.optString("version", "");
+                    String changelog = json.optString("changelog", "Pembaruan stabilitas dan performa.");
+                    String apkUrl = json.optString("apkDownloadUrl", "https://github.com/wandiapriliyandi/novabrowser/actions");
+
+                    String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+
+                    if (isNewerVersion(latestVersion, currentVersion)) {
+                        runOnUiThread(() -> showUpdateDialog(latestVersion, changelog, apkUrl));
+                    } else if (isManual) {
+                        runOnUiThread(() -> Toast.makeText(this, "Aplikasi sudah menggunakan versi terbaru (v" + currentVersion + ")", Toast.LENGTH_LONG).show());
+                    }
+                } else if (isManual) {
+                    runOnUiThread(() -> Toast.makeText(this, "Gagal memeriksa pembaruan (Server: " + conn.getResponseCode() + ")", Toast.LENGTH_SHORT).show());
+                }
+            } catch (Exception e) {
+                if (isManual) {
+                    runOnUiThread(() -> Toast.makeText(this, "Koneksi update gagal: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        }).start();
+    }
+
+    private boolean isNewerVersion(String latest, String current) {
+        if (latest == null || current == null || latest.isEmpty()) return false;
+        try {
+            String[] v1 = latest.replace("v", "").split("\\.");
+            String[] v2 = current.replace("v", "").split("\\.");
+            int len = Math.max(v1.length, v2.length);
+            for (int i = 0; i < len; i++) {
+                int p1 = i < v1.length ? Integer.parseInt(v1[i]) : 0;
+                int p2 = i < v2.length ? Integer.parseInt(v2[i]) : 0;
+                if (p1 > p2) return true;
+                if (p1 < p2) return false;
+            }
+        } catch (Exception ignored) {}
+        return false;
+    }
+
+    private void showUpdateDialog(String newVersion, String changelog, String apkUrl) {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("🚀 Pembaruan APK Tersedia (v" + newVersion + ")")
+                .setMessage("Versi terbaru NovaBrowser telah dirilis!\n\nCatatan Rilis:\n" + changelog + "\n\nUnduh file APK terbaru sekarang?")
+                .setPositiveButton("Unduh APK", (dialog, which) -> {
+                    try {
+                        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(apkUrl));
+                        startActivity(intent);
+                    } catch (Exception ex) {
+                        Toast.makeText(this, "Gagal membuka tautan unduhan: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Nanti", null)
+                .show();
     }
 
     @Override

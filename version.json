@@ -1,6 +1,8 @@
 {
-  "version": "1.2.3",
+  "version": "1.2.4",
+  "apkVersionCode": 9,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe",
-  "changelog": "v1.2.3: Nama aplikasi di perangkat Android tetap bersih 'NovaBrowser', dan penamaan file unduhan APK otomatis menyertakan versi (NovaBrowser-v1.2.3.apk)."
+  "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/actions",
+  "changelog": "v1.2.4: Menghilangkan mode developer di HP Android untuk tampilan murni, ringan & bersih, serta menambahkan fitur Cek & Unduh Update APK otomatis langsung dari HP (tombol 📥)."
 }
