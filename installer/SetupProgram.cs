@@ -9,12 +9,20 @@ using Microsoft.Win32;
 
 namespace NovaBrowser.Installer {
     static class SetupProgram {
-        public const string APP_VERSION = "v1.5.4";
+        public const string APP_VERSION = "v1.5.5";
 
         [STAThread]
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            Application.ThreadException += (s, e) => {
+                MessageBox.Show("Error Setup:\n" + e.Exception.Message, "NovaBrowser Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            };
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => {
+                MessageBox.Show("Fatal Error Setup:\n" + (e.ExceptionObject != null ? e.ExceptionObject.ToString() : "Unknown"), "NovaBrowser Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            };
+
             Application.Run(new SetupForm());
         }
     }
@@ -237,19 +245,19 @@ namespace NovaBrowser.Installer {
                 lblStatus.Text = "Mendaftarkan program ke sistem Windows...";
                 RegisterUninstallEntry(installDir, mainExe);
 
-                lblStatus.Text = "Pemasangan selesai dengan sukses!";
+                lblStatus.Text = "Pemasangan selesai! Silakan klik tombol di bawah untuk membuka.";
                 progressBar.Visible = false;
-                btnInstall.Text = "Selesai (Finish)";
+                btnInstall.Text = "Selesai (Buka Browser)";
                 btnInstall.BackColor = Color.FromArgb(5, 150, 105);
                 btnInstall.Enabled = true;
 
                 btnInstall.Click += (s, e) => {
-                    LaunchAppAndExit(mainExe, installDir);
+                    if (chkLaunchNow.Checked && File.Exists(mainExe)) {
+                        LaunchAppAndExit(mainExe, installDir);
+                    } else {
+                        Application.Exit();
+                    }
                 };
-
-                if (chkLaunchNow.Checked && File.Exists(mainExe)) {
-                    LaunchAppAndExit(mainExe, installDir);
-                }
             } catch (Exception ex) {
                 progressBar.Visible = false;
                 btnInstall.Enabled = true;

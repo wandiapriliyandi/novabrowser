@@ -83,17 +83,13 @@ namespace NovaBrowser {
                 args.Append(" --enable-features=DnsOverHttps --dns-over-https-templates=\"https://cloudflare-dns.com/dns-query{?dns}\"");
             }
 
-            // Opsi Hemat Memori yang 100% Stabil (Aman dari GPU crash & restart loop)
+            // Opsi Hemat Memori & Stabilitas Maksimal WebView2
             args.Append(" --disable-background-networking");
-            args.Append(" --disable-background-timer-throttling");
-            args.Append(" --disable-backgrounding-occluded-windows");
             args.Append(" --disable-component-update");
             args.Append(" --disable-default-apps");
             args.Append(" --disable-domain-reliability");
             args.Append(" --disable-sync");
             args.Append(" --disable-speech-api");
-            args.Append(" --disable-features=Translate,OptimizationHints,MediaRouter");
-            args.Append(" --renderer-process-limit=2");
 
             return args.ToString().Trim();
         }

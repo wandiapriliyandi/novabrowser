@@ -1,8 +1,8 @@
 {
-  "version": "1.5.4",
-  "apkVersionCode": 20,
+  "version": "1.5.5",
+  "apkVersionCode": 21,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.4: Memperbaiki pencegahan crash izin profil di Windows (%LocalAppData%), memperbarui penandatanganan permanen sertifikat APK Android (novabrowser.jks) agar tidak bentrok, dan pembaruan installer Setup Windows."
+  "changelog": "v1.5.5: Menghilangkan auto-close pada installer Setup, menambahkan pemulihan ProcessFailed WebView2, menstabilkan opsi Chromium engine, dan mengamankan homepage WebView Android."
 }

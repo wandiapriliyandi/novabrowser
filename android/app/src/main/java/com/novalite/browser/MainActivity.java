@@ -133,9 +133,13 @@ public class MainActivity extends Activity {
         settings.setSupportMultipleWindows(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
 
-        settings.setSavePassword(true);
-        settings.setSaveFormData(true);
-        wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        try {
+            settings.setSaveFormData(true);
+        } catch (Exception ignored) { }
+
+        try {
+            wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } catch (Exception ignored) { }
 
         if (defaultUserAgent.isEmpty()) {
             defaultUserAgent = settings.getUserAgentString();
@@ -449,7 +453,7 @@ public class MainActivity extends Activity {
                 "<a href='https://news.google.com' class='btn'>📰 Berita</a>" +
                 "</div>" +
                 "</body></html>";
-        wv.loadDataWithBaseURL("novalite://newtab", html, "text/html", "UTF-8", null);
+        wv.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
     }
 
     private void checkForUpdates(boolean isManual) {
@@ -564,19 +568,25 @@ public class MainActivity extends Activity {
     }
 
     private void showUpdateDialog(String newVersion, String changelog, String apkUrl) {
-        new AlertDialog.Builder(this)
-                .setTitle("🚀 Pembaruan APK Tersedia (v" + newVersion + ")")
-                .setMessage("Versi terbaru NovaBrowser telah dirilis!\n\nCatatan Rilis:\n" + changelog + "\n\nUnduh file APK terbaru sekarang?")
-                .setPositiveButton("Unduh APK", (dialog, which) -> {
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl));
-                        startActivity(intent);
-                    } catch (Exception ex) {
-                        Toast.makeText(this, "Gagal membuka tautan unduhan: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Nanti", null)
-                .show();
+        if (isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+            return;
+        }
+
+        try {
+            new AlertDialog.Builder(this)
+                    .setTitle("🚀 Pembaruan APK Tersedia (v" + newVersion + ")")
+                    .setMessage("Versi terbaru NovaBrowser telah dirilis!\n\nCatatan Rilis:\n" + changelog + "\n\nUnduh file APK terbaru sekarang?")
+                    .setPositiveButton("Unduh APK", (dialog, which) -> {
+                        try {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl));
+                            startActivity(intent);
+                        } catch (Exception ex) {
+                            Toast.makeText(this, "Gagal membuka tautan unduhan: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Nanti", null)
+                    .show();
+        } catch (Exception ignored) { }
     }
 
     @Override

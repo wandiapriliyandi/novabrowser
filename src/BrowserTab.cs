@@ -154,6 +154,13 @@ namespace NovaBrowser {
                 e.Handled = true;
                 mainForm.AddNewTab(e.Uri, true);
             };
+
+            webView.CoreWebView2.ProcessFailed += (s, e) => {
+                try {
+                    // Pulihkan WebView jika ada renderer crash tanpa mematikan aplikasi utama
+                    webView.Reload();
+                } catch { }
+            };
         }
 
         public void Navigate(string url) {
