@@ -1,6 +1,6 @@
 {
-  "version": "1.2.1",
+  "version": "1.2.2",
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe",
-  "changelog": "Fitur baru: Tombol cepat hapus URL (Clear Omnibox '✕') sekali klik tanpa perlu pencet tombol delete, serta update versi ke v1.2.1."
+  "changelog": "v1.2.2: Penamaan file APK dan label aplikasi Android otomatis menyertakan nomor versi dinamis (NovaLite-Browser-v1.2.2.apk)."
 }

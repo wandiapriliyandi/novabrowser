@@ -10,10 +10,16 @@ android {
         applicationId "com.novalite.browser"
         minSdk 21
         targetSdk 34
-        versionCode 6
-        versionName "1.2.1"
+        versionCode 7
+        versionName "1.2.2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "NovaLite-Browser-v${defaultConfig.versionName}.apk"
+        }
     }
 
     buildTypes {
