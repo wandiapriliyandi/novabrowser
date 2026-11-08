@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.4.0` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.4.1` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.4.1-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,14 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.4.0` (Rilis Saat Ini)
+### Versi `v1.4.1` (Rilis Saat Ini)
+* **Desain Kartu Multi-Tab Modern di HP**:
+  - Tampilan pengalih tab kini berbentuk **Kartu Interaktif (Tab Cards)** yang bersih dan jelas dengan nomor urut, judul halaman tebal, dan alamat domain.
+  - **Badge Indikator "AKTIF"**: Menandai tab yang sedang aktif dengan warna hijau terang.
+  - **1-Sentuhan Langsung Pindah Tab**: Menyentuh kartu tab langsung mengalihkan halaman seketika tanpa popup konfirmasi.
+  - **Tombol Hapus Cepat (`✕`)**: Tombol silang merah pada setiap kartu untuk langsung menutup tab tanpa langkah tambahan.
+
+### Versi `v1.4.0`
 * **Dukungan Multi-Tab Lengkap di Android**:
   - **Tombol Tambah Tab Cepat (`+`)**: Buka tab baru instan dalam 1 kali sentuh di toolbar atas HP.
   - **Penghitung & Pengalih Tab (`[ 1 ]`)**: Menampilkan jumlah tab yang aktif dan membuka menu pengalih tab (*Tab Switcher*) untuk berpindah atau menutup tab tertentu.

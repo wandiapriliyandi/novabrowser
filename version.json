@@ -1,8 +1,8 @@
 {
-  "version": "1.4.0",
-  "apkVersionCode": 14,
+  "version": "1.4.1",
+  "apkVersionCode": 15,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowser.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.4.0: Fitur Multi-Tab lengkap di HP Android (tombol counter tab, pembuka tab baru '+', dialog switcher tab, dan auto pop-up tab baru)."
+  "changelog": "v1.4.1: Desain antarmuka Multi-Tab Card modern di Android dengan nomor tab, judul jelas, badge AKTIF, tombol tutup instan '✕', dan peralihan 1-klik tanpa konfirmasi berulang."
 }

@@ -262,43 +262,72 @@ public class MainActivity extends Activity {
     }
 
     private void showTabSwitcher() {
-        if (tabs.isEmpty()) return;
-
-        String[] tabTitles = new String[tabs.size()];
-        for (int i = 0; i < tabs.size(); i++) {
-            TabModel t = tabs.get(i);
-            String prefix = (i == activeTabIndex) ? "▶ " : "• ";
-            String title = (t.title != null && !t.title.isEmpty()) ? t.title : "Tab " + (i + 1);
-            tabTitles[i] = prefix + title + "\n   " + (t.url != null ? t.url : "");
+        if (tabs.isEmpty()) {
+            createNewTab("novalite://newtab", true);
+            return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("📑 Multi-Tab (" + tabs.size() + " Tab Terbuka)");
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_tab_switcher, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
 
-        builder.setItems(tabTitles, (dialog, which) -> {
-            // Pilih opsi untuk tab yang diklik: Beralih atau Tutup
-            showTabActionDialog(which);
-        });
+        TextView txtSwitcherTitle = dialogView.findViewById(R.id.txtSwitcherTitle);
+        txtSwitcherTitle.setText("📑 Multi-Tab (" + tabs.size() + ")");
 
-        builder.setPositiveButton("➕ Buka Tab Baru", (dialog, which) -> {
+        Button btnCloseSwitcher = dialogView.findViewById(R.id.btnCloseSwitcher);
+        btnCloseSwitcher.setOnClickListener(v -> dialog.dismiss());
+
+        Button btnAddNewTab = dialogView.findViewById(R.id.btnAddNewTabFromSwitcher);
+        btnAddNewTab.setOnClickListener(v -> {
             createNewTab("novalite://newtab", true);
+            dialog.dismiss();
         });
 
-        builder.setNegativeButton("Tutup", null);
-        builder.show();
-    }
+        ViewGroup container = dialogView.findViewById(R.id.tabCardsContainer);
+        container.removeAllViews();
 
-    private void showTabActionDialog(int index) {
-        TabModel t = tabs.get(index);
-        String title = (t.title != null && !t.title.isEmpty()) ? t.title : "Tab " + (index + 1);
+        for (int i = 0; i < tabs.size(); i++) {
+            final int tabIndex = i;
+            TabModel t = tabs.get(i);
 
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage("URL: " + t.url)
-                .setPositiveButton("Beralih ke Tab Ini", (d, w) -> switchToTab(index))
-                .setNeutralButton("✕ Tutup Tab", (d, w) -> closeTab(index))
-                .setNegativeButton("Kembali", (d, w) -> showTabSwitcher())
-                .show();
+            View card = getLayoutInflater().inflate(R.layout.item_tab_card, container, false);
+
+            TextView txtTabBadge = card.findViewById(R.id.txtTabBadge);
+            TextView txtTabTitle = card.findViewById(R.id.txtTabTitle);
+            TextView txtActiveIndicator = card.findViewById(R.id.txtActiveIndicator);
+            TextView txtTabUrl = card.findViewById(R.id.txtTabUrl);
+            Button btnCloseThisTab = card.findViewById(R.id.btnCloseThisTab);
+
+            txtTabBadge.setText(String.valueOf(i + 1));
+            String title = (t.title != null && !t.title.isEmpty()) ? t.title : "Tab " + (i + 1);
+            txtTabTitle.setText(title);
+            txtTabUrl.setText(t.url != null ? t.url : "about:blank");
+
+            if (i == activeTabIndex) {
+                txtActiveIndicator.setVisibility(View.VISIBLE);
+                card.setBackgroundColor(0xFF334155); // Highlight tab aktif
+            }
+
+            // 1-Klik Langsung Pindah Tab & Tutup Dialog (Tanpa Konfirmasi)
+            card.setOnClickListener(v -> {
+                switchToTab(tabIndex);
+                dialog.dismiss();
+            });
+
+            // 1-Klik Langsung Tutup Tab Ini
+            btnCloseThisTab.setOnClickListener(v -> {
+                closeTab(tabIndex);
+                dialog.dismiss();
+                if (!tabs.isEmpty()) {
+                    showTabSwitcher(); // Segarkan tampilan daftar tab
+                }
+            });
+
+            container.addView(card);
+        }
+
+        dialog.show();
     }
 
     private void setupListeners() {
