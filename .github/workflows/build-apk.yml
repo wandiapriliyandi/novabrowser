@@ -31,6 +31,12 @@ jobs:
       - name: Build Debug APK
         run: |
           cd android
+          # Pastikan keystore kompatibel dengan JDK 17
+          if ! keytool -list -keystore app/novabrowser.jks -storepass novabrowser123 > /dev/null 2>&1; then
+              echo "[INFO] Menghasilkan keystore resmi kompatibel JDK 17..."
+              rm -f app/novabrowser.jks
+              keytool -genkeypair -v -keystore app/novabrowser.jks -alias novabrowser -keyalg RSA -keysize 2048 -validity 10000 -storepass novabrowser123 -keypass novabrowser123 -dname "CN=NovaBrowser, OU=Dev, O=Nova, L=Jakarta, ST=ID, C=ID"
+          fi
           gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
@@ -40,7 +46,7 @@ jobs:
         run: |
           VERSION=$(grep 'versionName' android/app/build.gradle | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
           if [ -z "$VERSION" ]; then
-            VERSION="1.2.5"
+            VERSION="1.5.1"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected App Version: $VERSION"
@@ -57,6 +63,7 @@ jobs:
 
       - name: Create or Update GitHub Release
         if: github.ref == 'refs/heads/main'
+        continue-on-error: true
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}

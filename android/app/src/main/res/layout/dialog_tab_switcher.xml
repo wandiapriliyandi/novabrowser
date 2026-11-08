@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="📑 Tab Terbuka (1)"
+            android:text="Tab Terbuka"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -29,7 +29,7 @@
             android:id="@+id/btnCloseSwitcher"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:text="✕"
+            android:text="X"
             android:textColor="#94A3B8"
             android:background="#334155"
             android:textSize="14sp" />
@@ -60,7 +60,7 @@
             android:id="@+id/btnAddNewTabFromSwitcher"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="➕ Buka Tab Baru"
+            android:text="+ Buka Tab Baru"
             android:textColor="#FFFFFF"
             android:background="#0284C7"
             android:textStyle="bold"

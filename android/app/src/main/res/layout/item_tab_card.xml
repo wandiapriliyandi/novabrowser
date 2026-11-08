@@ -63,7 +63,7 @@
             android:id="@+id/btnCloseThisTab"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:text="✕"
+            android:text="X"
             android:textColor="#EF4444"
             android:background="#334155"
             android:textSize="13sp"

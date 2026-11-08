@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.5.0` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.5.1` (Desktop Installer & Android Edition)
 
 > **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, dan Sistem Pembaruan Otomatis.**
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.5.1-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,10 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.5.0` (Rilis Saat Ini)
+### Versi `v1.5.1` (Rilis Saat Ini)
+* **Perbaikan Build Android CI**: Memperbaiki kompatibilitas format sertifikat penandatanganan pada runner Ubuntu JDK 17 dan membersihkan resource XML AAPT2 agar kompilasi APK selalu berhasil 100%.
+
+### Versi `v1.5.0`
 * **Pemasangan Mudah dengan Setup Installer Resmi Windows (`NovaBrowserSetup.exe`)**:
   - Menyediakan file instalasi mandiri ringkas (~500 KB) yang secara otomatis memasang browser ke komputer pengguna dengan aman.
   - **Pintasan Otomatis**: Otomatis membuat pintasan resmi di Desktop dan Start Menu Windows lengkap dengan ikon resolusi tinggi.

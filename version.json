@@ -1,8 +1,8 @@
 {
-  "version": "1.5.0",
-  "apkVersionCode": 16,
+  "version": "1.5.1",
+  "apkVersionCode": 17,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.0: Rilis resmi NovaBrowser Setup Installer untuk Windows (NovaBrowserSetup.exe) dengan shortcut otomatis ke Desktop dan Start Menu, serta registrasi uninstaller."
+  "changelog": "v1.5.1: Perbaikan kompatibilitas keystore penandatanganan APK resmi di JDK 17 CI dan pembersihan resource XML antarmuka multi-tab."
 }
