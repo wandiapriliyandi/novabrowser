@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.2.2` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.2.3` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.2.2-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,10 +10,9 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.2.2` (Rilis Saat Ini)
-* **Penamaan File APK Otomatis & Dinamis**: File output APK kini otomatis diberi nama sesuai versi rilis (`NovaLite-Browser-v1.2.2.apk`), bukan lagi nama generik `app-debug.apk`.
-* **Label Nama Aplikasi Android**: Label aplikasi saat terpasang di Android kini menampilkan nomor versi sesuai string rilis (`NovaLite Browser v1.2.2`).
-* **Dynamic GitHub Actions Artifact**: Artifact download di GitHub Actions sekarang otomatis mengikuti versi rilis dinamis (`NovaLite-Browser-v1.2.2-APK`).
+### Versi `v1.2.3` (Rilis Saat Ini)
+* **Pembeda File Unduhan Versi Baru vs Lama**: File download APK Android otomatis diberi nama versi rilis lengkap (`NovaBrowser-v1.2.3.apk`) dan artifact GitHub Actions `NovaBrowser-v1.2.3-APK` agar pengguna dapat membedakan file terupdate dengan mudah.
+* **Nama Aplikasi Tetap Bersih**: Nama aplikasi saat terpasang di perangkat Android tetap bersih sebagai **NovaBrowser**.
 
 ### Versi `v1.2.1`
 * **Fitur Tombol Cepat Hapus URL (Clear Omnibox '✕')**: Saat form URL diklik atau terdapat teks, muncul tombol `✕` di ujung kanan kolom alamat untuk menghapus URL seketika dengan 1 klik tanpa perlu menekan tombol delete atau backspace.

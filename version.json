@@ -1,6 +1,6 @@
 {
-  "version": "1.2.2",
+  "version": "1.2.3",
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe",
-  "changelog": "v1.2.2: Penamaan file APK dan label aplikasi Android otomatis menyertakan nomor versi dinamis (NovaLite-Browser-v1.2.2.apk)."
+  "changelog": "v1.2.3: Nama aplikasi di perangkat Android tetap bersih 'NovaBrowser', dan penamaan file unduhan APK otomatis menyertakan versi (NovaBrowser-v1.2.3.apk)."
 }
