@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.2.5` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.3.0` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,8 +10,14 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.2.5` (Rilis Saat Ini)
-* **Perbaikan Kompilasi APK CI GitHub**: Memperbaiki kegagalan build pada Android Gradle Plugin (AGP 8.2) dengan memisahkan tahap packaging dan penamaan file versi resmi (`NovaBrowser-v1.2.5.apk`).
+### Versi `v1.3.0` (Rilis Saat Ini)
+* **Integrasi GitHub Releases Resmi (Auto-Updater)**: Sistem update otomatis (baik pada Windows Desktop maupun Android) kini langsung terhubung ke **GitHub Releases API** (`releases/latest`).
+  - Pembaruan binary Windows (`NovaBrowser.exe`) dan Android (`NovaBrowser-v1.3.0.apk`) diunduh langsung dari server CDN resmi GitHub Release berkecepatan tinggi.
+  - Memiliki fitur *Dual-Fallback*: Jika API GitHub mencapai batas kuota request, aplikasi otomatis beralih ke `version.json` raw repository sehingga pembaruan tidak akan pernah gagal.
+* **Otomatisasi Rilis GitHub via Actions**: Setiap kali ada pembaruan kode di branch `main`, GitHub Actions secara otomatis mempublikasikan GitHub Release baru lengkap dengan lampiran file binary Windows dan APK Android siap pakai.
+
+### Versi `v1.2.5`
+* **Perbaikan Kompilasi APK CI GitHub**: Memperbaiki proses build CI pada runner Ubuntu GitHub Actions untuk menghasilkan file versi resmi `NovaBrowser-v1.3.0.apk`.
 
 ### Versi `v1.2.4`
 * **Pembaruan APK Otomatis di HP (In-App APK Updater)**: Menambahkan pendeteksian otomatis pembaruan APK saat aplikasi dibuka di Android dan tombol manual `[📥]` di toolbar untuk memeriksa rilis APK baru serta mengunduh file versi terbaru langsung dari HP.

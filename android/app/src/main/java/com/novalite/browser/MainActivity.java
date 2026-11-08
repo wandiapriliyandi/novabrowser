@@ -213,13 +213,19 @@ public class MainActivity extends Activity {
 
     private void checkForUpdates(boolean isManual) {
         new Thread(() -> {
+            String latestVersion = "";
+            String changelog = "";
+            String apkUrl = "https://github.com/wandiapriliyandi/novabrowser/releases/latest";
+
+            // 1. Coba periksa via GitHub Releases API Resmi
             try {
-                java.net.URL url = new java.net.URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
+                java.net.URL url = new java.net.URL("https://api.github.com/repos/wandiapriliyandi/novabrowser/releases/latest");
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(6000);
                 conn.setReadTimeout(6000);
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
+                conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
 
                 if (conn.getResponseCode() == 200) {
                     java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
@@ -231,23 +237,70 @@ public class MainActivity extends Activity {
                     reader.close();
 
                     org.json.JSONObject json = new org.json.JSONObject(sb.toString());
-                    String latestVersion = json.optString("version", "");
-                    String changelog = json.optString("changelog", "Pembaruan stabilitas dan performa.");
-                    String apkUrl = json.optString("apkDownloadUrl", "https://github.com/wandiapriliyandi/novabrowser/actions");
+                    latestVersion = json.optString("tag_name", "").replace("v", "");
+                    changelog = json.optString("body", "Pembaruan GitHub Release terbaru.");
 
-                    String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-
-                    if (isNewerVersion(latestVersion, currentVersion)) {
-                        runOnUiThread(() -> showUpdateDialog(latestVersion, changelog, apkUrl));
-                    } else if (isManual) {
-                        runOnUiThread(() -> Toast.makeText(this, "Aplikasi sudah menggunakan versi terbaru (v" + currentVersion + ")", Toast.LENGTH_LONG).show());
+                    // Cari asset file APK
+                    org.json.JSONArray assets = json.optJSONArray("assets");
+                    if (assets != null) {
+                        for (int i = 0; i < assets.length(); i++) {
+                            org.json.JSONObject asset = assets.getJSONObject(i);
+                            String assetName = asset.optString("name", "");
+                            if (assetName.endsWith(".apk")) {
+                                apkUrl = asset.optString("browser_download_url", apkUrl);
+                                break;
+                            }
+                        }
                     }
+                }
+            } catch (Exception ignored) { }
+
+            // 2. Fallback jika GitHub API rate-limited
+            if (latestVersion == null || latestVersion.isEmpty()) {
+                try {
+                    java.net.URL url = new java.net.URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(6000);
+                    conn.setReadTimeout(6000);
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
+
+                    if (conn.getResponseCode() == 200) {
+                        java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            sb.append(line);
+                        }
+                        reader.close();
+
+                        org.json.JSONObject json = new org.json.JSONObject(sb.toString());
+                        latestVersion = json.optString("version", "");
+                        changelog = json.optString("changelog", "Pembaruan stabilitas dan performa.");
+                        apkUrl = json.optString("apkDownloadUrl", apkUrl);
+                    }
+                } catch (Exception ex) {
+                    if (isManual) {
+                        runOnUiThread(() -> Toast.makeText(this, "Koneksi update gagal: " + ex.getMessage(), Toast.LENGTH_SHORT).show());
+                    }
+                    return;
+                }
+            }
+
+            try {
+                String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                final String finalVersion = latestVersion;
+                final String finalChangelog = changelog;
+                final String finalApkUrl = apkUrl;
+
+                if (isNewerVersion(finalVersion, currentVersion)) {
+                    runOnUiThread(() -> showUpdateDialog(finalVersion, finalChangelog, finalApkUrl));
                 } else if (isManual) {
-                    runOnUiThread(() -> Toast.makeText(this, "Gagal memeriksa pembaruan (Server: " + conn.getResponseCode() + ")", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, "NovaBrowser sudah versi terbaru (v" + currentVersion + ")", Toast.LENGTH_LONG).show());
                 }
             } catch (Exception e) {
                 if (isManual) {
-                    runOnUiThread(() -> Toast.makeText(this, "Koneksi update gagal: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, "Gagal memproses versi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                 }
             }
         }).start();

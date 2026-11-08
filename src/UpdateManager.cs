@@ -13,38 +13,82 @@ namespace NovaBrowser {
         public string DownloadUrl { get; set; }
         public string Changelog { get; set; }
         public bool HasUpdate { get; set; }
+        public string ReleaseUrl { get; set; }
     }
 
     public static class UpdateManager {
-        public const string VERSION_CHECK_URL = "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json";
+        public const string GITHUB_RELEASE_API = "https://api.github.com/repos/wandiapriliyandi/novabrowser/releases/latest";
+        public const string VERSION_FALLBACK_URL = "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json";
 
         public static async Task<UpdateInfo> CheckForUpdatesAsync(string currentVersion) {
+            // 1. Coba periksa rilis terbaru melalui GitHub Release API Resmi
             try {
                 using (WebClient client = new WebClient()) {
-                    client.Headers.Add("User-Agent", "NovaLite-Browser-Updater/" + currentVersion);
-                    string json = await client.DownloadStringTaskAsync(new Uri(VERSION_CHECK_URL));
+                    client.Headers.Add("User-Agent", "NovaBrowser-App/" + currentVersion);
+                    client.Headers.Add("Accept", "application/vnd.github.v3+json");
+                    string json = await client.DownloadStringTaskAsync(new Uri(GITHUB_RELEASE_API));
+
+                    string tagName = ExtractJsonValue(json, "tag_name");
+                    string releaseBody = ExtractJsonValue(json, "body");
+                    string htmlUrl = ExtractJsonValue(json, "html_url");
+
+                    if (!string.IsNullOrEmpty(tagName)) {
+                        string remoteVer = tagName.TrimStart('v', 'V');
+                        Version cur = ParseVersion(currentVersion);
+                        Version rem = ParseVersion(remoteVer);
+
+                        // Cari download URL asset NovaBrowser.exe
+                        string exeDownloadUrl = "";
+                        var assetMatch = Regex.Match(json, "\"browser_download_url\"\\s*:\\s*\"([^\"]*NovaBrowser\\.exe[^\"]*)\"");
+                        if (assetMatch.Success) {
+                            exeDownloadUrl = assetMatch.Groups[1].Value;
+                        } else {
+                            exeDownloadUrl = "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe";
+                        }
+
+                        if (rem > cur) {
+                            return new UpdateInfo() {
+                                Version = remoteVer,
+                                DownloadUrl = exeDownloadUrl,
+                                Changelog = !string.IsNullOrEmpty(releaseBody) ? releaseBody.Replace("\\r\\n", "\n").Replace("\\n", "\n") : "Pembaruan GitHub Release terbaru.",
+                                HasUpdate = true,
+                                ReleaseUrl = htmlUrl
+                            };
+                        } else {
+                            return new UpdateInfo() { Version = remoteVer, HasUpdate = false };
+                        }
+                    }
+                }
+            } catch {
+                // Fallback ke version.json jika GitHub API rate-limited
+            }
+
+            // 2. Fallback: Periksa file version.json langsung di raw repository
+            try {
+                using (WebClient client = new WebClient()) {
+                    client.Headers.Add("User-Agent", "NovaBrowser-App/" + currentVersion);
+                    string json = await client.DownloadStringTaskAsync(new Uri(VERSION_FALLBACK_URL));
 
                     string remoteVer = ExtractJsonValue(json, "version");
                     string downloadUrl = ExtractJsonValue(json, "downloadUrl");
                     string changelog = ExtractJsonValue(json, "changelog");
 
-                    if (string.IsNullOrEmpty(remoteVer)) return null;
+                    if (!string.IsNullOrEmpty(remoteVer)) {
+                        Version cur = ParseVersion(currentVersion);
+                        Version rem = ParseVersion(remoteVer);
 
-                    Version cur = ParseVersion(currentVersion);
-                    Version rem = ParseVersion(remoteVer);
-
-                    bool hasUpdate = (rem > cur);
-
-                    return new UpdateInfo() {
-                        Version = remoteVer,
-                        DownloadUrl = downloadUrl,
-                        Changelog = changelog,
-                        HasUpdate = hasUpdate
-                    };
+                        return new UpdateInfo() {
+                            Version = remoteVer,
+                            DownloadUrl = downloadUrl,
+                            Changelog = changelog,
+                            HasUpdate = (rem > cur),
+                            ReleaseUrl = "https://github.com/wandiapriliyandi/novabrowser/releases"
+                        };
+                    }
                 }
-            } catch {
-                return null;
-            }
+            } catch { }
+
+            return null;
         }
 
         private static string ExtractJsonValue(string json, string key) {

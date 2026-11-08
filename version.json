@@ -1,8 +1,8 @@
 {
-  "version": "1.2.5",
-  "apkVersionCode": 10,
+  "version": "1.3.0",
+  "apkVersionCode": 11,
   "releaseDate": "2026-11-08",
-  "downloadUrl": "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe",
-  "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/actions",
-  "changelog": "v1.2.5: Perbaikan kompilasi Android CI di GitHub Actions (mengatasi konflik outputFileName AGP 8) dan penamaan file APK ber-versi otomatis."
+  "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowser.exe",
+  "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
+  "changelog": "v1.3.0: Sistem Update Otomatis resmi terintegrasi dengan GitHub Releases API (Windows & Android) dengan dual-fallback system untuk kecepatan download maksimal."
 }
