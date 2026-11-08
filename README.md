@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.1.2` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.2.0` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.1.2-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,11 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.1.2` (Rilis Saat Ini)
+### Versi `v1.2.0` (Rilis Saat Ini)
+* **Fitur Utama: Sistem Update Otomatis (In-App Auto-Updater)**: Browser dapat mendeteksi versi terbaru secara senyap saat startup dan memperbarui file executable portabel dalam 1 klik langsung dari dalam aplikasi tanpa perlu repot membuka GitHub atau download ulang manual.
+* **Tombol Cek Pembaruan Manual**: Tersedia tombol `[🔄 Cek Update]` di bilah status bawah untuk memeriksa rilis baru kapan saja.
+
+### Versi `v1.1.2`
 * **Optimasi Efisiensi Baterai (Android Lifecycle)**: Menambahkan `pauseTimers()` dan `onPause()` otomatis saat layar mati atau aplikasi di-minimize untuk membekukan proses JS latar belakang (0% CPU background).
 * **Update Versi SemVer**: Otomatis dinaikkan ke `v1.1.2` sesuai skill lokal `.agents/skills/app-versioning/`.
 

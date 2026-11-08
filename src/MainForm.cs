@@ -74,6 +74,7 @@ namespace NovaBrowser {
         private StatusStrip statusStrip;
         private ToolStripStatusLabel statusLabel;
         private ToolStripStatusLabel statusRam;
+        private ToolStripStatusLabel statusUpdate;
 
         public BrowserTab ActiveTab {
             get {
@@ -90,7 +91,7 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.1.2";
+        public const string APP_VERSION = "v1.2.0";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
@@ -131,6 +132,9 @@ namespace NovaBrowser {
             string startUrl = string.IsNullOrWhiteSpace(initialUrl) ? "novalite://newtab" : initialUrl;
             AddNewTab(startUrl, true);
             UpdateMemoryStatus(false);
+
+            // Pemeriksaan update otomatis di latar belakang setelah startup
+            Task.Delay(3500).ContinueWith(_ => CheckForUpdatesSilent());
         }
 
         private void BuildUI() {
@@ -273,8 +277,19 @@ namespace NovaBrowser {
                 UpdateMemoryStatus(true);
                 MessageBox.Show(this, "Pembersihan memori berhasil dilakukan!\nMemori yang tidak aktif telah dilepaskan kembali ke Windows.", "Optimasi RAM", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
+
+            statusUpdate = new ToolStripStatusLabel("🔄 Cek Update") {
+                TextAlign = ContentAlignment.MiddleRight,
+                IsLink = true,
+                LinkColor = Color.FromArgb(16, 185, 129),
+                ActiveLinkColor = Color.FromArgb(52, 211, 153),
+                Margin = new Padding(8, 0, 8, 0)
+            };
+            statusUpdate.Click += (s, e) => CheckForUpdatesManual();
+
             statusStrip.Items.Add(statusLabel);
             statusStrip.Items.Add(statusRam);
+            statusStrip.Items.Add(statusUpdate);
 
             this.Controls.Add(pnlBrowserHost);
             this.Controls.Add(pnlHeader);
@@ -573,6 +588,39 @@ namespace NovaBrowser {
                 }
                 var dlg = new InstallAppDialog(title, url);
                 dlg.ShowDialog(this);
+            }
+        }
+
+        public async void CheckForUpdatesManual() {
+            statusUpdate.Text = "Memeriksa...";
+            var info = await UpdateManager.CheckForUpdatesAsync(APP_VERSION);
+            if (info != null && info.HasUpdate) {
+                statusUpdate.Text = "🎉 Update v" + info.Version;
+                PromptUserUpdate(info);
+            } else if (info != null) {
+                statusUpdate.Text = "✅ v" + APP_VERSION + " Terbaru";
+                MessageBox.Show(this, "NovaLite Browser sudah dalam versi paling baru (" + APP_VERSION + ").", "Cek Pembaruan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else {
+                statusUpdate.Text = "🔄 Cek Update";
+                MessageBox.Show(this, "Tidak dapat terhubung ke server pembaruan. Periksa koneksi internet Anda.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        public async void CheckForUpdatesSilent() {
+            var info = await UpdateManager.CheckForUpdatesAsync(APP_VERSION);
+            if (info != null && info.HasUpdate) {
+                this.BeginInvoke(new Action(() => {
+                    statusUpdate.Text = "🎉 Update v" + info.Version;
+                    PromptUserUpdate(info);
+                }));
+            }
+        }
+
+        private void PromptUserUpdate(UpdateInfo info) {
+            var dlg = new UpdateDialog(APP_VERSION, info.Version, info.Changelog);
+            dlg.ShowDialog(this);
+            if (dlg.ShouldUpdate) {
+                UpdateManager.ApplyUpdate(this, info.DownloadUrl, info.Version);
             }
         }
 

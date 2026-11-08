@@ -33,7 +33,9 @@ echo Mengompilasi kode sumber C# ke NovaBrowser.exe...
     src\Homepage.cs ^
     src\BookmarkHistoryManager.cs ^
     src\HistoryForm.cs ^
-    src\InstallAppDialog.cs
+    src\InstallAppDialog.cs ^
+    src\UpdateManager.cs ^
+    src\UpdateDialog.cs
 
 if %ERRORLEVEL% equ 0 (
     echo.
