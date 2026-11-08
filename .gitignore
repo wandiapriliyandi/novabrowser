@@ -1,0 +1,17 @@
+# Profiles (Data login & sandi lokal Anda)
+profiles/
+*.log
+
+# Android build cache
+android/.gradle/
+android/app/build/
+android/build/
+local.properties
+
+# Visual Studio / Windows
+*.suo
+*.user
+.vs/
+bin/
+obj/
+
