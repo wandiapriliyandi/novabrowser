@@ -92,14 +92,14 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.4.1";
+        public const string APP_VERSION = "v1.5.0";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
             this.CurrentProfileManager = new ProfileManager(appMode ? "WebApps" : "Default");
             this.BookmarkHistory = new BookmarkHistoryManager(CurrentProfileManager.GetUserDataFolder());
 
-            this.Text = "NovaLite Browser " + APP_VERSION + " - Ultra Lightweight & Developer Edition";
+            this.Text = "NovaBrowser " + APP_VERSION + " - Ultra Lightweight & Developer Edition";
             this.Size = new Size(1220, 780);
             this.MinimumSize = new Size(400, 300);
             this.StartPosition = FormStartPosition.CenterScreen;

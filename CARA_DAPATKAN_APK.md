@@ -1,6 +1,18 @@
-# 📱 Panduan Mengunduh File APK NovaLite Browser via GitHub Actions
+# 📱 Panduan Mengunduh File APK & Windows Installer via GitHub Releases
 
-Dengan konfigurasi otomatis yang telah disiapkan di folder [`.github/workflows/build-apk.yml`](file:///.github/workflows/build-apk.yml), Anda dapat mengompilasi dan mendapatkan file **`.apk` Android** secara **gratis, otomatis, dan tanpa membebani laptop Anda**.
+Seluruh rilis resmi NovaBrowser untuk **Android APK** dan **Windows Setup Installer** dipublikasikan secara otomatis di tab **Releases** repository:
+👉 **[Halaman Rilis Resmi NovaBrowser](https://github.com/wandiapriliyandi/novabrowser/releases)**
+
+---
+
+## 📦 Berkas Unduhan yang Tersedia:
+
+1. **`NovaBrowserSetup.exe` (Windows Desktop)**:
+   - File installer resmi mandiri (~500 KB).
+   - Klik 2x untuk memasang otomatis ke komputer dengan pintasan Desktop dan Start Menu.
+2. **`NovaBrowser-v*.apk` (Android HP)**:
+   - File APK resmi untuk perangkat Android.
+   - Dilengkapi dukungan Multi-Tab modern dan auto-update.
 
 ---
 

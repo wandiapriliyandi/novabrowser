@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -46,12 +47,60 @@ namespace NovaBrowser {
                 MessageBox.Show("Kesalahan fatal sistem:\n" + (e.ExceptionObject != null ? e.ExceptionObject.ToString() : "Unknown"), "NovaLite Browser", MessageBoxButtons.OK, MessageBoxIcon.Error);
             };
 
+            // Tangani proses uninstall
+            if (args != null && args.Length > 0 && Array.Exists(args, a => a.Equals("--uninstall", StringComparison.OrdinalIgnoreCase))) {
+                PerformUninstall();
+                return;
+            }
+
             // Pemeriksaan awal ketersediaan pustaka WebView2 sebelum form di-load
             if (!CheckPrerequisites()) {
                 return;
             }
 
             RunApplication(args);
+        }
+
+        private static void PerformUninstall() {
+            var confirm = MessageBox.Show(
+                "Apakah Anda yakin ingin menghapus NovaBrowser dari komputer Anda?",
+                "Penghapusan NovaBrowser",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+            if (confirm != DialogResult.Yes) return;
+
+            try {
+                // 1. Hapus Desktop Shortcut
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                string lnkDesktop = Path.Combine(desktopPath, "NovaBrowser.lnk");
+                if (File.Exists(lnkDesktop)) File.Delete(lnkDesktop);
+
+                // 2. Hapus Start Menu Shortcut
+                string startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "NovaBrowser");
+                if (Directory.Exists(startMenu)) Directory.Delete(startMenu, true);
+
+                // 3. Hapus Registry Entry
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall", true)) {
+                    if (key != null) key.DeleteSubKeyTree("NovaBrowser", false);
+                }
+
+                // 4. Jadwalkan pembersihan folder instalasi setelah proses keluar
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                string cleanupBat = Path.Combine(Path.GetTempPath(), "cleanup_novabrowser.bat");
+                string batContent = string.Format(
+@"@echo off
+timeout /t 1 /nobreak >nul
+rmdir /s /q ""{0}""
+del ""%~f0""
+", appDir);
+                File.WriteAllText(cleanupBat, batContent);
+                Process.Start(new ProcessStartInfo(cleanupBat) { CreateNoWindow = true, UseShellExecute = false });
+
+                MessageBox.Show("NovaBrowser telah berhasil dihapus dari komputer Anda.", "Uninstall Selesai", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } catch (Exception ex) {
+                MessageBox.Show("Gagal menghapus beberapa berkas:\n" + ex.Message, "Uninstall", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private static bool CheckPrerequisites() {
@@ -62,14 +111,11 @@ namespace NovaBrowser {
 
             if (!File.Exists(dllInLib) && !File.Exists(dllInRoot) && !File.Exists(dllInDev)) {
                 MessageBox.Show(
-                    "⚠️ Pustaka WebView2 Tidak Ditemukan!\n\n" +
-                    "Aplikasi 'NovaBrowser.exe' memerlukan folder 'lib' untuk dapat berjalan.\n\n" +
-                    "Kemungkinan penyebab:\n" +
-                    "• Anda memindahkan file 'NovaBrowser.exe' sendirian tanpa menyertakan folder 'lib'.\n\n" +
+                    "⚠️ Berkas Instalasi NovaBrowser Belum Lengkap!\n\n" +
+                    "Aplikasi memerlukan pustaka komponen WebView2 untuk dapat berjalan.\n\n" +
                     "Solusi:\n" +
-                    "1. Pastikan folder 'lib' berada di samping 'NovaBrowser.exe', ATAU\n" +
-                    "2. Gunakan paket lengkap 'NovaBrowser-Windows-Portable.zip'.",
-                    "NovaBrowser - Folder 'lib' Kurang",
+                    "Silakan pasang kembali menggunakan installer resmi 'NovaBrowserSetup.exe'.",
+                    "NovaBrowser - Memerlukan Instalasi",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
                 );

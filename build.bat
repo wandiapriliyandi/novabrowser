@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 echo ===================================================
-echo     Mengompilasi NovaLite Browser (Portable)
+echo     Mengompilasi NovaBrowser Application Core
 echo ===================================================
 echo.
 
@@ -41,7 +41,6 @@ if %ERRORLEVEL% equ 0 (
     echo.
     echo ===================================================
     echo [SUKSES] NovaBrowser.exe berhasil dibuat!
-    echo Ukuran file sangat kecil dan siap dijalankan portabel.
     echo ===================================================
 ) else (
     echo.

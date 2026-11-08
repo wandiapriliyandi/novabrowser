@@ -46,7 +46,6 @@ jobs:
           echo "Detected App Version: $VERSION"
 
           cp android/app/build/outputs/apk/debug/app-debug.apk "android/app/build/outputs/apk/debug/NovaBrowser-v${VERSION}.apk"
-          zip -r "NovaBrowser-Windows-Portable-v${VERSION}.zip" NovaBrowser.exe NovaBrowser.exe.config lib/ app.ico
           ls -la android/app/build/outputs/apk/debug/
 
       - name: Upload APK Artifact
@@ -68,17 +67,16 @@ jobs:
             ## 🚀 NovaBrowser v${{ steps.get_version.outputs.VERSION }} Rilis Resmi
 
             ### 📦 File Unduhan Langsung:
-            - **Windows (Paket Lengkap Siap Pakai)**: `NovaBrowser-Windows-Portable-v${{ steps.get_version.outputs.VERSION }}.zip`
-            - **Windows (Executable Saja)**: `NovaBrowser.exe`
+            - **Windows (Setup Installer)**: `NovaBrowserSetup.exe` (Pemasangan mudah 1-klik dengan shortcut Desktop & Start Menu otomatis)
             - **Android (APK)**: `NovaBrowser-v${{ steps.get_version.outputs.VERSION }}.apk`
 
             ### ✨ Fitur Utama:
-            - **Auto-Update Resmi via GitHub Releases**: Pembaruan instan 1-klik untuk Windows & Android.
-            - **Desain Bersih & Super Ringan**: Konsumsi RAM dan baterai ultra-hemat.
-            - **Omnibox Clear Button (`✕`)**: Hapus alamat URL dalam 1 kali sentuh/klik.
+            - **Windows Setup Installer**: Instalasi otomatis dan bersih tanpa perlu konfigurasi folder manual.
+            - **Multi-Tab Android Modern**: Desain kartu tab interaktif, indikator aktif, dan tutup cepat.
+            - **Auto-Update Resmi via GitHub Releases**: Pembaruan otomatis langsung dari aplikasi.
+            - **Ultra Ringan & Cepat**: Konsumsi RAM dan baterai sangat hemat berbasis Chromium WebView2.
           files: |
             android/app/build/outputs/apk/debug/NovaBrowser-v*.apk
-            NovaBrowser-Windows-Portable-v*.zip
-            NovaBrowser.exe
+            NovaBrowserSetup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

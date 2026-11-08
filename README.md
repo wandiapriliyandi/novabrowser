@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.4.1` (Portable & Developer Edition)
+# ⚡ NovaBrowser `v1.5.0` (Desktop Installer & Android Edition)
 
-> **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
+> **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, dan Sistem Pembaruan Otomatis.**
 
-[![Version](https://img.shields.io/badge/version-1.4.1-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,15 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.4.1` (Rilis Saat Ini)
+### Versi `v1.5.0` (Rilis Saat Ini)
+* **Pemasangan Mudah dengan Setup Installer Resmi Windows (`NovaBrowserSetup.exe`)**:
+  - Menyediakan file instalasi mandiri ringkas (~500 KB) yang secara otomatis memasang browser ke komputer pengguna dengan aman.
+  - **Pintasan Otomatis**: Otomatis membuat pintasan resmi di Desktop dan Start Menu Windows lengkap dengan ikon resolusi tinggi.
+  - **Uninstaller Terintegrasi**: Terdaftar rapi di Windows *Settings / Apps & Features* sehingga dapat dihapus dengan bersih kapan saja.
+  - **Tidak Ada Lagi Masalah Berkas Terpisah**: Mengeliminasi kebutuhan penyalinan folder `lib/` manual dan mencegah error berkas hilang.
+* **Pembaruan Rilis GitHub**: File rilis utama desktop kini menggunakan **`NovaBrowserSetup.exe`**.
+
+### Versi `v1.4.1`
 * **Desain Kartu Multi-Tab Modern di HP**:
   - Tampilan pengalih tab kini berbentuk **Kartu Interaktif (Tab Cards)** yang bersih dan jelas dengan nomor urut, judul halaman tebal, dan alamat domain.
   - **Badge Indikator "AKTIF"**: Menandai tab yang sedang aktif dengan warna hijau terang.
@@ -78,11 +86,11 @@
 
 ## 🚀 Keunggulan Utama
 
-* **Ultra Ringan**: Ukuran file `NovaBrowser.exe` hanya **~71 KB** dengan konsumsi RAM idle hanya **~39 MB** (2000x lebih kecil dari Electron).
-* **100% Portabel & Tanpa Install (Zero-Install)**: Tidak perlu installer (setup.exe/msi), tidak memerlukan hak Administrator, dan tidak mengotori registry Windows. Cukup simpan di folder manapun atau flashdisk dan klik ganda `NovaBrowser.exe`.
+* **Ultra Ringan & Cepat**: Konsumsi RAM idle hanya **~39 MB** (jauh lebih irit dan responsif daripada browser berbasis Electron).
+* **Pemasangan Mudah (1-Klik Installer)**: Cukup unduh `NovaBrowserSetup.exe` (~500 KB), klik sekali, dan aplikasi langsung siap digunakan lengkap dengan shortcut Desktop dan Start Menu.
 * **Engine Chromium Modern**: Menggunakan Microsoft Edge WebView2 Evergreen bawaan Windows 10 & 11 yang selalu terupdate, aman, dan mendukung akselerasi GPU.
 * **Simpan Sandi Otomatis (Password Manager & Autofill)**: Menyimpan sandi login secara aman dan mengisi otomatis (autofill).
-* **Multi-Profil Portabel**: Semua riwayat, cookies, sesi login, dan sandi tersimpan rapi di dalam subdirektori `./profiles/` di folder aplikasi.
+* **Multi-Profil Cerdas**: Semua riwayat, cookies, sesi login, dan sandi tersimpan rapi dan terisolasi.
 * **Pasang Halaman Web sebagai Aplikasi (Install Page / PWA)**: Pasang website apapun (misal YouTube, WhatsApp Web, ChatGPT, atau Dashboard Localhost) langsung ke Desktop Windows sebagai aplikasi mandiri (*standalone web app window*).
 
 ---
