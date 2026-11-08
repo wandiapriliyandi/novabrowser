@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.2.4` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.2.5` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.2.4-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,10 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.2.4` (Rilis Saat Ini)
+### Versi `v1.2.5` (Rilis Saat Ini)
+* **Perbaikan Kompilasi APK CI GitHub**: Memperbaiki kegagalan build pada Android Gradle Plugin (AGP 8.2) dengan memisahkan tahap packaging dan penamaan file versi resmi (`NovaBrowser-v1.2.5.apk`).
+
+### Versi `v1.2.4`
 * **Pembaruan APK Otomatis di HP (In-App APK Updater)**: Menambahkan pendeteksian otomatis pembaruan APK saat aplikasi dibuka di Android dan tombol manual `[📥]` di toolbar untuk memeriksa rilis APK baru serta mengunduh file versi terbaru langsung dari HP.
 * **Tampilan Bersih di HP (Hapus Mode Dev)**: Menghapus toolbar developer dan floating console di HP Android agar peramban menjadi sangat bersih, ringan, dan nyaman untuk pengguna mobile.
 * **Tombol Cepat Hapus URL di HP (`✕`)**: Menambahkan tombol `✕` instan di samping kolom URL HP untuk menghapus alamat dalam 1 kali sentuhan.

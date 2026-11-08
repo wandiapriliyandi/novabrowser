@@ -32,16 +32,22 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Get App Version
+      - name: Prepare Versioned APK
         id: get_version
         run: |
-          VERSION=$(grep '"versionName"' android/app/build.gradle | awk -F '"' '{print $2}')
+          VERSION=$(grep 'versionName' android/app/build.gradle | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$VERSION" ]; then
+            VERSION="1.2.5"
+          fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected App Version: $VERSION"
+
+          cp android/app/build/outputs/apk/debug/app-debug.apk "android/app/build/outputs/apk/debug/NovaBrowser-v${VERSION}.apk"
+          ls -la android/app/build/outputs/apk/debug/
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: NovaBrowser-v${{ steps.get_version.outputs.VERSION }}-APK
-          path: android/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/NovaBrowser-v*.apk
           if-no-files-found: error
