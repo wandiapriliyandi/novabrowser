@@ -90,12 +90,14 @@ namespace NovaBrowser {
             }
         }
 
+        public const string APP_VERSION = "v1.1.0";
+
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
             this.CurrentProfileManager = new ProfileManager(appMode ? "WebApps" : "Default");
             this.BookmarkHistory = new BookmarkHistoryManager(CurrentProfileManager.GetUserDataFolder());
 
-            this.Text = "NovaLite Browser - Ultra Lightweight & Developer Edition";
+            this.Text = "NovaLite Browser " + APP_VERSION + " - Ultra Lightweight & Developer Edition";
             this.Size = new Size(1220, 780);
             this.MinimumSize = new Size(400, 300);
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -328,7 +330,7 @@ namespace NovaBrowser {
                 this.BeginInvoke(new Action(() => {
                     RebuildTabBar();
                     if (sender == ActiveTab) {
-                        this.Text = title + " - NovaLite Browser";
+                        this.Text = title + " - NovaLite Browser " + APP_VERSION;
                     }
                 }));
             };
@@ -394,7 +396,7 @@ namespace NovaBrowser {
 
             txtOmnibox.Text = tab.CurrentUrl.Equals("novalite://newtab", StringComparison.OrdinalIgnoreCase) ? "" : tab.CurrentUrl;
             lblSecurity.Text = OmniboxHelper.GetSecurityBadge(tab.CurrentUrl);
-            this.Text = (string.IsNullOrEmpty(tab.PageTitle) ? "NovaLite Browser" : tab.PageTitle + " - NovaLite Browser");
+            this.Text = (string.IsNullOrEmpty(tab.PageTitle) ? "NovaLite Browser " + APP_VERSION : tab.PageTitle + " - NovaLite Browser " + APP_VERSION);
 
             RebuildTabBar();
         }
@@ -542,36 +544,6 @@ namespace NovaBrowser {
 
         public void ToggleDisableWebSecurity() {
             CurrentProfileManager.DisableWebSecurity = !CurrentProfileManager.DisableWebSecurity;
-        }
-
-        private bool isKioskFullScreen = false;
-        private FormBorderStyle previousBorderStyle = FormBorderStyle.Sizable;
-
-        public void ToggleFullScreen() {
-            if (!isKioskFullScreen) {
-                previousBorderStyle = this.FormBorderStyle;
-                this.FormBorderStyle = FormBorderStyle.None;
-                this.WindowState = FormWindowState.Normal;
-                this.WindowState = FormWindowState.Maximized;
-                isKioskFullScreen = true;
-            } else {
-                this.FormBorderStyle = previousBorderStyle;
-                this.WindowState = FormWindowState.Maximized;
-                isKioskFullScreen = false;
-            }
-        }
-
-        public void ShowInstallAppDialog() {
-            if (ActiveTab != null) {
-                string url = ActiveTab.CurrentUrl;
-                string title = ActiveTab.PageTitle;
-                if (string.IsNullOrEmpty(url) || url.StartsWith("about:") || url.StartsWith("novalite://")) {
-                    MessageBox.Show(this, "Buka website terlebih dahulu sebelum memasangnya sebagai aplikasi.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                var dlg = new InstallAppDialog(title, url);
-                dlg.ShowDialog(this);
-            }
         }
 
         private bool isKioskFullScreen = false;

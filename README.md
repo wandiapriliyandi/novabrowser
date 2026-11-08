@@ -1,6 +1,24 @@
-# ⚡ NovaLite Browser (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.1.0` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
+
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](README.md)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
+[![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
+
+---
+
+## 📝 Catatan Rilis (Changelog)
+
+### Versi `v1.1.0` (Rilis Saat Ini)
+* **Skill Portabel Melekat**: Menyertakan `.agents/skills/app-versioning/` agar tata kelola versi tetap permanen saat proyek di-clone/pindah ke komputer lain.
+* **Fitur Pasang Halaman Web (Install Page / PWA)**: Tombol `[📦 Install]` untuk memasang website apapun ke Desktop sebagai aplikasi mandiri.
+* **Omnibox Autocomplete**: Saran otomatis instan dari riwayat penjelajahan, bookmark, dan port developer (`localhost:3000`, `vite:5173`, dll).
+* **Bookmark & History Manager**: Pengelola bookmark dan riwayat penjelajahan portabel (`Ctrl+D`, `Ctrl+H`).
+* **Mode Layar Penuh**: Otomatis maximized saat dibuka dan toggle Full Screen Kiosk via `F11`.
+* **Desain Ikon Baru**: Ikon neon orbital futuristik tertanam langsung di executable `.exe` dan shortcut desktop.
+* **Stabilitas Tinggi**: Menghilangkan siklus restart GPU watchdog saat startup awal dengan shared singleton environment.
+* **Dukungan Android APK**: Proyek native Android lengkap dan otomatisasi build APK via GitHub Actions.
 
 ---
 
