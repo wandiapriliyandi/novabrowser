@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 namespace NovaBrowser.Installer {
     static class SetupProgram {
-        public const string APP_VERSION = "v1.5.7";
+        public const string APP_VERSION = "v1.5.8";
 
         [STAThread]
         static void Main() {
@@ -207,7 +207,7 @@ namespace NovaBrowser.Installer {
                                     Directory.CreateDirectory(destDir);
                                 }
                                 if (!string.IsNullOrEmpty(entry.Name)) {
-                                    entry.ExtractToFile(destinationPath, true);
+                                    SafeExtractEntry(entry, destinationPath);
                                 }
                             }
                         }
@@ -304,20 +304,62 @@ namespace NovaBrowser.Installer {
             }
         }
 
+        private static void SafeExtractEntry(ZipArchiveEntry entry, string destinationPath) {
+            for (int attempt = 0; attempt < 5; attempt++) {
+                try {
+                    entry.ExtractToFile(destinationPath, true);
+                    return;
+                } catch (IOException) {
+                    if (attempt >= 1) {
+                        try {
+                            string oldFile = destinationPath + ".old";
+                            if (File.Exists(oldFile)) File.Delete(oldFile);
+                            File.Move(destinationPath, oldFile);
+                        } catch { }
+                    }
+                    System.Threading.Thread.Sleep(300);
+                }
+            }
+            try {
+                entry.ExtractToFile(destinationPath, true);
+            } catch { }
+        }
+
         private void CreateShortcut(string shortcutPath, string targetPath, string iconPath) {
+            bool success = false;
             try {
                 Type shellType = Type.GetTypeFromProgID("WScript.Shell");
-                if (shellType == null) return;
-                dynamic shell = Activator.CreateInstance(shellType);
-                dynamic shortcut = shell.CreateShortcut(shortcutPath);
-                shortcut.TargetPath = targetPath;
-                shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);
-                shortcut.Description = "NovaBrowser " + SetupProgram.APP_VERSION;
-                if (File.Exists(iconPath)) {
-                    shortcut.IconLocation = iconPath + ",0";
+                if (shellType != null) {
+                    dynamic shell = Activator.CreateInstance(shellType);
+                    dynamic shortcut = shell.CreateShortcut(shortcutPath);
+                    shortcut.TargetPath = targetPath;
+                    shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);
+                    shortcut.Description = "NovaBrowser " + SetupProgram.APP_VERSION;
+                    if (File.Exists(iconPath)) {
+                        shortcut.IconLocation = iconPath + ",0";
+                    }
+                    shortcut.Save();
+                    success = File.Exists(shortcutPath);
                 }
-                shortcut.Save();
             } catch { }
+
+            if (!success) {
+                try {
+                    string workDir = Path.GetDirectoryName(targetPath);
+                    string psScript = string.Format(
+                        "$ws=New-Object -ComObject WScript.Shell;$s=$ws.CreateShortcut('{0}');$s.TargetPath='{1}';$s.WorkingDirectory='{2}';$s.Save();",
+                        shortcutPath.Replace("'", "''"),
+                        targetPath.Replace("'", "''"),
+                        workDir.Replace("'", "''")
+                    );
+                    var psi = new ProcessStartInfo("powershell", "-NoProfile -NonInteractive -Command \"" + psScript + "\"") {
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    };
+                    var p = Process.Start(psi);
+                    p.WaitForExit(3000);
+                } catch { }
+            }
         }
 
         private void RegisterUninstallEntry(string installFolder, string exePath) {

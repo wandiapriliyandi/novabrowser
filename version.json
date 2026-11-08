@@ -1,8 +1,8 @@
 {
-  "version": "1.5.7",
-  "apkVersionCode": 23,
+  "version": "1.5.8",
+  "apkVersionCode": 24,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.7: Menambahkan tombol update resmi di toolbar atas Windows, mendukung auto-update ganda (Installer Setup & in-place Executable), serta perbaikan rilis GitHub."
+  "changelog": "v1.5.8: Safe-Extract installer dengan penanganan file lock otomatis (.old rename + retry) serta fallback pembuatan Desktop shortcut."
 }
