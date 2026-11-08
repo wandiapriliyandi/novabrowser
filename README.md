@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.5.6` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.5.7` (Desktop Installer & Android Edition)
 
 > **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, dan Sistem Pembaruan Otomatis.**
 
-[![Version](https://img.shields.io/badge/version-1.5.6-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.5.7-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,9 +10,12 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.5.6` (Rilis Saat Ini)
+### Versi `v1.5.7` (Rilis Saat Ini)
+* **Tombol Cek Pembaruan Cepat di Toolbar Atas (`📥 Update`)**: Menambahkan tombol update resmi di navigasi atas Windows desktop agar pengguna dapat mengecek dan memasang pembaruan instan dalam 1 kali klik.
+* **Auto-Update Fleksibel Windows**: Sistem update kini otomatis mengenali paket `NovaBrowserSetup.exe` (langsung mengeksekusi installer baru) maupun `NovaBrowser.exe` (in-place background replace).
+
+### Versi `v1.5.6`
 * **Desain Omnibox Minimalis & Bersih**: Menghilangkan badge teks protokol/dokumen di samping URL sehingga kolom alamat menjadi lebih lebar, lega, dan rapi persis seperti peramban modern.
-* **Pembaruan Paket Rilis**: Memperbarui installer `NovaBrowserSetup.exe` dan APK Android `NovaBrowser-v1.5.6.apk`.
 
 ### Versi `v1.5.5`
 * **Pencegahan Installer Auto-Close**: Installer Windows tidak lagi menutup dirinya sendiri secara otomatis saat instalasi selesai; melainkan menunggu klik tombol *"Selesai (Buka Browser)"* dari pengguna.

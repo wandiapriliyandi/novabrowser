@@ -1,8 +1,8 @@
 {
-  "version": "1.5.6",
-  "apkVersionCode": 22,
+  "version": "1.5.7",
+  "apkVersionCode": 23,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.6: Menghilangkan badge teks dokumen di samping URL agar kolom alamat lebih bersih dan luas, serta pembaruan build Windows Setup dan Android APK."
+  "changelog": "v1.5.7: Menambahkan tombol update resmi di toolbar atas Windows, mendukung auto-update ganda (Installer Setup & in-place Executable), serta perbaikan rilis GitHub."
 }

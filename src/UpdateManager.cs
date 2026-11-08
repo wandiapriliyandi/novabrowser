@@ -37,13 +37,17 @@ namespace NovaBrowser {
                         Version cur = ParseVersion(currentVersion);
                         Version rem = ParseVersion(remoteVer);
 
-                        // Cari download URL asset NovaBrowser.exe
+                        // Prioritaskan installer resmi NovaBrowserSetup.exe atau executable NovaBrowser.exe
                         string exeDownloadUrl = "";
-                        var assetMatch = Regex.Match(json, "\"browser_download_url\"\\s*:\\s*\"([^\"]*NovaBrowser\\.exe[^\"]*)\"");
-                        if (assetMatch.Success) {
-                            exeDownloadUrl = assetMatch.Groups[1].Value;
+                        var setupMatch = Regex.Match(json, "\"browser_download_url\"\\s*:\\s*\"([^\"]*NovaBrowserSetup\\.exe[^\"]*)\"");
+                        var exeMatch = Regex.Match(json, "\"browser_download_url\"\\s*:\\s*\"([^\"]*NovaBrowser\\.exe[^\"]*)\"");
+
+                        if (setupMatch.Success) {
+                            exeDownloadUrl = setupMatch.Groups[1].Value;
+                        } else if (exeMatch.Success) {
+                            exeDownloadUrl = exeMatch.Groups[1].Value;
                         } else {
-                            exeDownloadUrl = "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe";
+                            exeDownloadUrl = "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowserSetup.exe";
                         }
 
                         if (rem > cur) {
@@ -138,20 +142,33 @@ namespace NovaBrowser {
             dlg.Shown += async (s, e) => {
                 string currentExe = Application.ExecutablePath;
                 string appDir = AppDomain.CurrentDomain.BaseDirectory;
-                string tempExe = Path.Combine(appDir, "NovaBrowser.update");
-                string updaterBat = Path.Combine(appDir, "apply_update.bat");
+                bool isSetup = downloadUrl.IndexOf("Setup", StringComparison.OrdinalIgnoreCase) >= 0;
 
                 try {
                     using (WebClient client = new WebClient()) {
-                        client.Headers.Add("User-Agent", "NovaLite-Browser-Updater");
-                        await client.DownloadFileTaskAsync(new Uri(downloadUrl), tempExe);
-                    }
+                        client.Headers.Add("User-Agent", "NovaBrowser-App-Updater");
 
-                    lblStatus.Text = "Pembaruan berhasil diunduh. Memulai restart...";
-                    await Task.Delay(800);
+                        if (isSetup) {
+                            string tempSetup = Path.Combine(Path.GetTempPath(), "NovaBrowserSetup_v" + newVersion + ".exe");
+                            lblStatus.Text = "Mengunduh paket installer pembaruan...";
+                            await client.DownloadFileTaskAsync(new Uri(downloadUrl), tempSetup);
 
-                    // Buat skrip batch pengganti yang aman
-                    string batchContent = string.Format(
+                            lblStatus.Text = "Menjalankan pembaruan installer...";
+                            await Task.Delay(600);
+
+                            Process.Start(new ProcessStartInfo(tempSetup) { UseShellExecute = true });
+                            Environment.Exit(0);
+                        } else {
+                            string tempExe = Path.Combine(appDir, "NovaBrowser.update");
+                            string updaterBat = Path.Combine(appDir, "apply_update.bat");
+
+                            lblStatus.Text = "Mengunduh pembaruan aplikasi...";
+                            await client.DownloadFileTaskAsync(new Uri(downloadUrl), tempExe);
+
+                            lblStatus.Text = "Menerapkan pembaruan...";
+                            await Task.Delay(600);
+
+                            string batchContent = string.Format(
 @"@echo off
 timeout /t 1 /nobreak >nul
 del ""{0}""
@@ -160,16 +177,17 @@ start """" ""{0}""
 del ""%~f0""
 ", currentExe, tempExe);
 
-                    File.WriteAllText(updaterBat, batchContent);
+                            File.WriteAllText(updaterBat, batchContent);
 
-                    // Jalankan batch updater lalu tutup browser
-                    ProcessStartInfo psi = new ProcessStartInfo() {
-                        FileName = updaterBat,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    };
-                    Process.Start(psi);
-                    Environment.Exit(0);
+                            ProcessStartInfo psi = new ProcessStartInfo() {
+                                FileName = updaterBat,
+                                CreateNoWindow = true,
+                                UseShellExecute = false
+                            };
+                            Process.Start(psi);
+                            Environment.Exit(0);
+                        }
+                    }
                 } catch (Exception ex) {
                     MessageBox.Show(dlg, "Gagal mengunduh pembaruan:\n" + ex.Message, "Error Pembaruan", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     dlg.Close();

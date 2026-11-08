@@ -64,6 +64,7 @@ namespace NovaBrowser {
         private Button btnToggleDev;
         private Button btnTogglePentest;
         private Button btnOpenDevTools;
+        private Button btnUpdateNav;
         public bool IsAppMode { get; private set; }
 
         // Toolbars
@@ -92,7 +93,7 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.5.6";
+        public const string APP_VERSION = "v1.5.7";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
@@ -267,6 +268,11 @@ namespace NovaBrowser {
             btnOpenDevTools.BackColor = Color.FromArgb(14, 116, 144);
             btnOpenDevTools.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
 
+            btnUpdateNav = CreateNavButton("📥 Update", (s, e) => CheckForUpdatesManual());
+            btnUpdateNav.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+            btnUpdateNav.ForeColor = Color.FromArgb(52, 211, 153);
+            btnUpdateNav.BackColor = Color.FromArgb(30, 41, 59);
+
             // Susun Nav Bar secara absolut/docked
             pnlNav.Resize += (s, e) => LayoutNavBar();
 
@@ -333,6 +339,7 @@ namespace NovaBrowser {
 
             int right = pnlNav.Width - 8;
             btnOpenDevTools.Location = new Point(right - btnOpenDevTools.Width, 7); right -= btnOpenDevTools.Width + 5;
+            btnUpdateNav.Location = new Point(right - btnUpdateNav.Width, 7); right -= btnUpdateNav.Width + 5;
             btnTogglePentest.Location = new Point(right - btnTogglePentest.Width, 7); right -= btnTogglePentest.Width + 5;
             btnToggleDev.Location = new Point(right - btnToggleDev.Width, 7); right -= btnToggleDev.Width + 5;
             btnInstallApp.Location = new Point(right - btnInstallApp.Width, 7); right -= btnInstallApp.Width + 5;
