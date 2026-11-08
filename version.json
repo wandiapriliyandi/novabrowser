@@ -1,8 +1,8 @@
 {
-  "version": "1.5.1",
-  "apkVersionCode": 17,
+  "version": "1.5.2",
+  "apkVersionCode": 18,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.1: Perbaikan kompatibilitas keystore penandatanganan APK resmi di JDK 17 CI dan pembersihan resource XML antarmuka multi-tab."
+  "changelog": "v1.5.2: Pemulihan kestabilan penuh build Android CI dan penerbitan paket instalasi Windows Setup serta Android APK ke GitHub Artifacts."
 }
