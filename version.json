@@ -1,6 +1,6 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/NovaBrowser.exe",
-  "changelog": "Fitur baru: Sistem Update Otomatis (Auto-Updater), optimasi efisiensi baterai, dan peningkatan stabilitas performa."
+  "changelog": "Fitur baru: Tombol cepat hapus URL (Clear Omnibox '✕') sekali klik tanpa perlu pencet tombol delete, serta update versi ke v1.2.1."
 }

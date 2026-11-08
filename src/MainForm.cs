@@ -56,6 +56,7 @@ namespace NovaBrowser {
         private Button btnHome;
         private Label lblSecurity;
         private TextBox txtOmnibox;
+        private Button btnClearUrl;
         private Button btnGo;
         private Button btnBookmarks;
         private Button btnHistory;
@@ -91,7 +92,7 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.2.0";
+        public const string APP_VERSION = "v1.2.1";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
@@ -214,10 +215,35 @@ namespace NovaBrowser {
                     e.SuppressKeyPress = true;
                 }
             };
-            txtOmnibox.GotFocus += (s, e) => txtOmnibox.SelectAll();
+            txtOmnibox.GotFocus += (s, e) => {
+                txtOmnibox.SelectAll();
+                UpdateClearButtonPosition();
+            };
+            txtOmnibox.TextChanged += (s, e) => UpdateClearButtonPosition();
+
+            btnClearUrl = new Button() {
+                Text = "✕",
+                Size = new Size(20, 20),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(30, 41, 59),
+                ForeColor = Color.FromArgb(148, 163, 184),
+                Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 7.5f, FontStyle.Bold),
+                Visible = false
+            };
+            btnClearUrl.FlatAppearance.BorderSize = 0;
+            btnClearUrl.FlatAppearance.MouseOverBackColor = Color.FromArgb(239, 68, 68);
+            btnClearUrl.FlatAppearance.MouseDownBackColor = Color.FromArgb(185, 28, 28);
+            btnClearUrl.Click += (s, e) => {
+                txtOmnibox.Clear();
+                txtOmnibox.Focus();
+                UpdateClearButtonPosition();
+            };
 
             pnlNav.Controls.Add(lblSecurity);
             pnlNav.Controls.Add(txtOmnibox);
+            pnlNav.Controls.Add(btnClearUrl);
+            btnClearUrl.BringToFront();
 
             btnGo = CreateNavButton("➔", (s, e) => NavigateToOmnibox());
 
@@ -319,6 +345,14 @@ namespace NovaBrowser {
 
             txtOmnibox.Location = new Point(left, 7);
             txtOmnibox.Size = new Size(Math.Max(100, right - left), 28);
+            UpdateClearButtonPosition();
+        }
+
+        private void UpdateClearButtonPosition() {
+            if (btnClearUrl == null || txtOmnibox == null) return;
+            btnClearUrl.Location = new Point(txtOmnibox.Right - btnClearUrl.Width - 4, txtOmnibox.Top + (txtOmnibox.Height - btnClearUrl.Height) / 2);
+            btnClearUrl.BringToFront();
+            btnClearUrl.Visible = !string.IsNullOrEmpty(txtOmnibox.Text);
         }
 
         private Button CreateNavButton(string text, EventHandler onClick) {
