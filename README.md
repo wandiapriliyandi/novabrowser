@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.3.1` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.3.2` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,11 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.3.1` (Rilis Saat Ini)
+### Versi `v1.3.2` (Rilis Saat Ini)
+* **Pencegahan Force-Close & Resolusi Assembly Otomatis**: Menambahkan `AssemblyResolve` otomatis dan pre-flight check pada startup Windows sehingga aplikasi tidak akan lagi force-close diam-diam jika pengguna memindahkan file executable ke direktori baru tanpa menyertakan folder `lib/`.
+* **Paket Rilis Lengkap Windows ZIP**: Menyediakan file paket `NovaBrowser-Windows-Portable-v1.3.2.zip` pada GitHub Releases yang langsung berisi seluruh dependensi (`NovaBrowser.exe`, `lib/`, `config`, dan ikon) sehingga siap pakai tanpa konfigurasi manual.
+
+### Versi `v1.3.1`
 * **Sertifikat Penandatanganan APK Tetap (Stable Keystore Signing)**: Menyematkan keystore sertifikat resmi permanen (`novabrowser.jks`) sehingga setiap pembaruan APK di HP Android ditandatangani dengan tanda tangan kriptografi yang identik. Tidak ada lagi error *"Aplikasi tidak terpasang karena paket bentrok dengan yang sudah ada"*, dan aplikasi bisa langsung ditimpa (*in-place update*) tanpa kehilangan data.
 
 ### Versi `v1.3.0`

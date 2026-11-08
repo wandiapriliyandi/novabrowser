@@ -1,8 +1,8 @@
 {
-  "version": "1.3.1",
-  "apkVersionCode": 12,
+  "version": "1.3.2",
+  "apkVersionCode": 13,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowser.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.3.1: Menyematkan sertifikat penandatanganan APK permanen (release keystore) agar pembaruan APK di HP tidak bentrok dengan paket lama dan bisa langsung ditimpa update."
+  "changelog": "v1.3.2: Penanganan cerdas dependensi WebView2 (AssemblyResolve otomatis), pencegahan force-close diam-diam jika folder lib belum disalin, dan paket rilis Windows Portable ZIP lengkap."
 }
