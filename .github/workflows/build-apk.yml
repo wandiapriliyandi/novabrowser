@@ -33,14 +33,14 @@ jobs:
           cd android
           gradle wrapper
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug --no-daemon --stacktrace --info
 
       - name: Prepare Versioned APK
         id: get_version
         run: |
           VERSION=$(grep 'versionName' android/app/build.gradle | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
           if [ -z "$VERSION" ]; then
-            VERSION="1.5.2"
+            VERSION="1.5.3"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected App Version: $VERSION"
