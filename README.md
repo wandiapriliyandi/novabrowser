@@ -1,8 +1,8 @@
-# ⚡ NovaLite Browser `v1.1.0` (Portable & Developer Edition)
+# ⚡ NovaLite Browser `v1.1.1` (Portable & Developer Edition)
 
 > **Peramban Desktop Ultra-Ringan, 100% Portabel (Zero-Install), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, dan Manajemen Multi-Profil.**
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,11 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.1.0` (Rilis Saat Ini)
+### Versi `v1.1.1` (Rilis Saat Ini)
+* **Perbaikan Build Android CI**: Memperbaiki workflow GitHub Actions untuk build APK menggunakan Android SDK bawaan runner Ubuntu dan `gradle/actions/setup-gradle@v4` yang stabil.
+* **Update Versi Otomatis**: Mematuhi aturan SemVer lokal `.agents/skills/app-versioning/`.
+
+### Versi `v1.1.0`
 * **Skill Portabel Melekat**: Menyertakan `.agents/skills/app-versioning/` agar tata kelola versi tetap permanen saat proyek di-clone/pindah ke komputer lain.
 * **Fitur Pasang Halaman Web (Install Page / PWA)**: Tombol `[📦 Install]` untuk memasang website apapun ke Desktop sebagai aplikasi mandiri.
 * **Omnibox Autocomplete**: Saran otomatis instan dari riwayat penjelajahan, bookmark, dan port developer (`localhost:3000`, `vite:5173`, dll).

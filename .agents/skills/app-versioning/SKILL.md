@@ -40,3 +40,4 @@ Setiap kali membuat atau memodifikasi sebuah aplikasi di workspace:
   * Node.js / Web: `"version": "1.1.0"` di `package.json`.
   * Python: `__version__ = "1.1.0"`.
 * **Dokumentasi**: Badge versi dan changelog di `README.md`.
+
