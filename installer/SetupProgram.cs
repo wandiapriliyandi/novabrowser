@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 namespace NovaBrowser.Installer {
     static class SetupProgram {
-        public const string APP_VERSION = "v1.5.3";
+        public const string APP_VERSION = "v1.5.4";
 
         [STAThread]
         static void Main() {
@@ -164,13 +164,18 @@ namespace NovaBrowser.Installer {
             lblStatus.Text = "Menyiapkan direktori pemasangan...";
 
             try {
+                // Tutup proses NovaBrowser lama jika sedang berjalan agar berkas tidak terkunci
+                foreach (var proc in Process.GetProcessesByName("NovaBrowser")) {
+                    try { proc.Kill(); proc.WaitForExit(1500); } catch { }
+                }
+
                 // 1. Buat direktori instalasi
                 if (!Directory.Exists(installDir)) {
                     Directory.CreateDirectory(installDir);
                 }
 
                 lblStatus.Text = "Mengekstrak berkas aplikasi...";
-                await System.Threading.Tasks.Task.Delay(500);
+                await System.Threading.Tasks.Task.Delay(300);
 
                 // 2. Ekstrak payload dari Embedded Resource
                 Assembly asm = Assembly.GetExecutingAssembly();
@@ -209,7 +214,7 @@ namespace NovaBrowser.Installer {
                 string appIco = Path.Combine(installDir, "app.ico");
 
                 lblStatus.Text = "Membuat pintasan desktop & start menu...";
-                await System.Threading.Tasks.Task.Delay(300);
+                await System.Threading.Tasks.Task.Delay(200);
 
                 // 3. Buat Desktop Shortcut
                 if (chkDesktopShortcut.Checked) {
@@ -239,15 +244,11 @@ namespace NovaBrowser.Installer {
                 btnInstall.Enabled = true;
 
                 btnInstall.Click += (s, e) => {
-                    if (chkLaunchNow.Checked && File.Exists(mainExe)) {
-                        Process.Start(new ProcessStartInfo(mainExe) { UseShellExecute = true });
-                    }
-                    Application.Exit();
+                    LaunchAppAndExit(mainExe, installDir);
                 };
 
                 if (chkLaunchNow.Checked && File.Exists(mainExe)) {
-                    Process.Start(new ProcessStartInfo(mainExe) { UseShellExecute = true });
-                    Application.Exit();
+                    LaunchAppAndExit(mainExe, installDir);
                 }
             } catch (Exception ex) {
                 progressBar.Visible = false;
@@ -255,6 +256,19 @@ namespace NovaBrowser.Installer {
                 lblStatus.Text = "Pemasangan gagal: " + ex.Message;
                 MessageBox.Show(this, "Terjadi kesalahan saat memasang NovaBrowser:\n" + ex.Message, "Error Pemasangan", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void LaunchAppAndExit(string mainExe, string workingDir) {
+            try {
+                if (File.Exists(mainExe)) {
+                    var psi = new ProcessStartInfo(mainExe) {
+                        WorkingDirectory = workingDir,
+                        UseShellExecute = true
+                    };
+                    Process.Start(psi);
+                }
+            } catch { }
+            Application.Exit();
         }
 
         private void CopyFolder(string sourceDir, string targetDir) {

@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.5.3` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.5.4` (Desktop Installer & Android Edition)
 
 > **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, dan Sistem Pembaruan Otomatis.**
 
-[![Version](https://img.shields.io/badge/version-1.5.3-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.5.4-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,9 +10,13 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.5.3` (Rilis Saat Ini)
-* **Perbaikan Kompilasi Build CI Android**: Memperbaiki `cannot find symbol: class TextView` pada `MainActivity.java` dengan menambahkan import `android.widget.TextView` yang hilang, memastikan build `./gradlew assembleDebug` berhasil 100% di runner GitHub Actions.
-* **Installer Windows & Multi-Tab Android**: Memperbarui paket instalasi `NovaBrowserSetup.exe` dan APK Android `NovaBrowser-v1.5.3.apk`.
+### Versi `v1.5.4` (Rilis Saat Ini)
+* **Penyelesaian Crash Izin Profil di Windows**: Memindahkan penyimpanan profil pengguna ke `%LocalAppData%\NovaBrowser\profiles` yang terisolasi dan memiliki izin write penuh, mencegah silent crash saat membuka aplikasi.
+* **Sertifikat APK Permanen (Bebas Bentrok Paket)**: Menanamkan kembali sertifikat penandatanganan rilis resmi tetap (`novabrowser.jks`) sehingga pembaruan APK di HP Android tidak akan pernah bentrok lagi.
+* **Setup Installer Windows Cerdas**: Memperbaiki `WorkingDirectory` dan penanganan proses berjalan pada `NovaBrowserSetup.exe`.
+
+### Versi `v1.5.3`
+* **Perbaikan Kompilasi Build CI Android**: Memperbaiki `cannot find symbol: class TextView` pada `MainActivity.java` dengan menambahkan import `android.widget.TextView` yang hilang.
 
 ### Versi `v1.5.2`
 * **Kestabilan Penuh Kompilasi CI**: Memulihkan konfigurasi build Android murni yang terbukti 100% sukses di runner Ubuntu GitHub Actions dan mempublikasikan file **`NovaBrowser-Setup-v1.5.3-Windows`** serta **`NovaBrowser-v1.5.3-Android-APK`** langsung ke tab Artifacts.

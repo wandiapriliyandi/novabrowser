@@ -11,11 +11,29 @@ namespace NovaBrowser {
 
         public static string ProfilesDirectory {
             get {
-                string dir = Path.Combine(AppRoot, "profiles");
-                if (!Directory.Exists(dir)) {
-                    Directory.CreateDirectory(dir);
+                try {
+                    // Gunakan %LocalAppData%\NovaBrowser\profiles (standar Windows, izin penuh tanpa admin)
+                    string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    string dir = Path.Combine(localAppData, "NovaBrowser", "profiles");
+                    if (!Directory.Exists(dir)) {
+                        Directory.CreateDirectory(dir);
+                    }
+                    return dir;
+                } catch {
+                    try {
+                        string fallbackDir = Path.Combine(AppRoot, "profiles");
+                        if (!Directory.Exists(fallbackDir)) {
+                            Directory.CreateDirectory(fallbackDir);
+                        }
+                        return fallbackDir;
+                    } catch {
+                        string tempDir = Path.Combine(Path.GetTempPath(), "NovaBrowser", "profiles");
+                        if (!Directory.Exists(tempDir)) {
+                            Directory.CreateDirectory(tempDir);
+                        }
+                        return tempDir;
+                    }
                 }
-                return dir;
             }
         }
 
@@ -32,11 +50,19 @@ namespace NovaBrowser {
         }
 
         public string GetUserDataFolder() {
-            string profilePath = Path.Combine(ProfilesDirectory, this.CurrentProfile);
-            if (!Directory.Exists(profilePath)) {
-                Directory.CreateDirectory(profilePath);
+            try {
+                string profilePath = Path.Combine(ProfilesDirectory, this.CurrentProfile);
+                if (!Directory.Exists(profilePath)) {
+                    Directory.CreateDirectory(profilePath);
+                }
+                return profilePath;
+            } catch {
+                string safePath = Path.Combine(Path.GetTempPath(), "NovaBrowser", "profiles", this.CurrentProfile);
+                try {
+                    if (!Directory.Exists(safePath)) Directory.CreateDirectory(safePath);
+                } catch { }
+                return safePath;
             }
-            return profilePath;
         }
 
         public string BuildCommandLineArguments() {

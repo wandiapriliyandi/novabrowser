@@ -1,8 +1,8 @@
 {
-  "version": "1.5.3",
-  "apkVersionCode": 19,
+  "version": "1.5.4",
+  "apkVersionCode": 20,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.3: Memperbaiki kompilasi CI Android (menambahkan dependensi import TextView yang hilang) serta pembaruan installer Setup Windows dan Android APK multi-tab."
+  "changelog": "v1.5.4: Memperbaiki pencegahan crash izin profil di Windows (%LocalAppData%), memperbarui penandatanganan permanen sertifikat APK Android (novabrowser.jks) agar tidak bentrok, dan pembaruan installer Setup Windows."
 }

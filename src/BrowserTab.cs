@@ -62,8 +62,18 @@ namespace NovaBrowser {
                 }
 
                 if (environment == null) {
-                    var envOptions = new CoreWebView2EnvironmentOptions(args);
-                    environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder, envOptions);
+                    bool failed = false;
+                    try {
+                        var envOptions = new CoreWebView2EnvironmentOptions(args);
+                        environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder, envOptions);
+                    } catch {
+                        failed = true;
+                    }
+
+                    if (failed || environment == null) {
+                        environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder, null);
+                    }
+
                     lock (envCache) {
                         envCache[envKey] = environment;
                     }
