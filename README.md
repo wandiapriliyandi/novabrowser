@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.5.5` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.5.6` (Desktop Installer & Android Edition)
 
 > **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, dan Sistem Pembaruan Otomatis.**
 
-[![Version](https://img.shields.io/badge/version-1.5.5-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.5.6-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,11 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.5.5` (Rilis Saat Ini)
+### Versi `v1.5.6` (Rilis Saat Ini)
+* **Desain Omnibox Minimalis & Bersih**: Menghilangkan badge teks protokol/dokumen di samping URL sehingga kolom alamat menjadi lebih lebar, lega, dan rapi persis seperti peramban modern.
+* **Pembaruan Paket Rilis**: Memperbarui installer `NovaBrowserSetup.exe` dan APK Android `NovaBrowser-v1.5.6.apk`.
+
+### Versi `v1.5.5`
 * **Pencegahan Installer Auto-Close**: Installer Windows tidak lagi menutup dirinya sendiri secara otomatis saat instalasi selesai; melainkan menunggu klik tombol *"Selesai (Buka Browser)"* dari pengguna.
 * **Pemulihan Otomatis Subproses WebView2 (`ProcessFailed`)**: Tab browser kini menangani event kegagalan proses native secara mandiri sehingga browser tidak crash.
 * **Stabilitas Chromium & WebView Android**: Menghapus flag eksperimental yang memicu abort proses dan mengamankan pemuatan homepage lokal di Android.

@@ -1,8 +1,8 @@
 {
-  "version": "1.5.5",
-  "apkVersionCode": 21,
+  "version": "1.5.6",
+  "apkVersionCode": 22,
   "releaseDate": "2026-11-08",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.5: Menghilangkan auto-close pada installer Setup, menambahkan pemulihan ProcessFailed WebView2, menstabilkan opsi Chromium engine, dan mengamankan homepage WebView Android."
+  "changelog": "v1.5.6: Menghilangkan badge teks dokumen di samping URL agar kolom alamat lebih bersih dan luas, serta pembaruan build Windows Setup dan Android APK."
 }

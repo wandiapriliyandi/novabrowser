@@ -92,7 +92,7 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.5.5";
+        public const string APP_VERSION = "v1.5.6";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
@@ -240,7 +240,6 @@ namespace NovaBrowser {
                 UpdateClearButtonPosition();
             };
 
-            pnlNav.Controls.Add(lblSecurity);
             pnlNav.Controls.Add(txtOmnibox);
             pnlNav.Controls.Add(btnClearUrl);
             btnClearUrl.BringToFront();
@@ -332,8 +331,6 @@ namespace NovaBrowser {
             btnReload.Location = new Point(left, 7); left += btnReload.Width + 4;
             btnHome.Location = new Point(left, 7); left += btnHome.Width + 8;
 
-            lblSecurity.Location = new Point(left, 7); left += lblSecurity.Width + 6;
-
             int right = pnlNav.Width - 8;
             btnOpenDevTools.Location = new Point(right - btnOpenDevTools.Width, 7); right -= btnOpenDevTools.Width + 5;
             btnTogglePentest.Location = new Point(right - btnTogglePentest.Width, 7); right -= btnTogglePentest.Width + 5;
@@ -388,7 +385,6 @@ namespace NovaBrowser {
                 this.BeginInvoke(new Action(() => {
                     if (sender == ActiveTab) {
                         txtOmnibox.Text = newUrl.Equals("novalite://newtab", StringComparison.OrdinalIgnoreCase) ? "" : newUrl;
-                        lblSecurity.Text = OmniboxHelper.GetSecurityBadge(newUrl);
                     }
                 }));
             };
@@ -444,7 +440,6 @@ namespace NovaBrowser {
             pnlBrowserHost.Controls.Add(tab);
 
             txtOmnibox.Text = tab.CurrentUrl.Equals("novalite://newtab", StringComparison.OrdinalIgnoreCase) ? "" : tab.CurrentUrl;
-            lblSecurity.Text = OmniboxHelper.GetSecurityBadge(tab.CurrentUrl);
             this.Text = (string.IsNullOrEmpty(tab.PageTitle) ? "NovaLite Browser " + APP_VERSION : tab.PageTitle + " - NovaLite Browser " + APP_VERSION);
 
             RebuildTabBar();
