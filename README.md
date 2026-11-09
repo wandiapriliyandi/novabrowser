@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.6.0` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.6.1` (Desktop Installer & Android Edition)
 
 > **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, URL Autocomplete di HP, dan Sistem Pembaruan Otomatis Cerdas.**
 
-[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,13 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.6.0` (Rilis Saat Ini)
+### Versi `v1.6.1` (Rilis Saat Ini)
+* **Perbaikan Koneksi Server Pembaruan di Windows PC (Fix SSL/TLS Handshake Error)**:
+  - Mengatasi masalah pesan *"Tidak dapat terhubung ke server pembaruan"* saat mengklik tombol update di PC.
+  - **Dukungan Wajib TLS 1.2 / TLS 1.3**: Mengaktifkan `ServicePointManager.SecurityProtocol` protokol keamanan modern secara eksplisit sehingga koneksi HTTPS ke GitHub Releases API (`api.github.com`) dan raw GitHub berhasil 100% tanpa ditolak server.
+  - **Pesan Diagnostik Jelas**: Menampilkan rincian penyebab error jika terjadi gangguan jaringan atau pembatasan kuota API.
+
+### Versi `v1.6.0`
 * **Sistem Catatan Rilis Dinamis di HP Android**:
   - Mengatasi masalah catatan rilis yang statis / "itu-itu saja" saat notifikasi update muncul di HP.
   - **Sinkronisasi Langsung ke `version.json`**: Dialog update di HP kini membaca changelog terbaru yang spesifik dan akurat langsung dari sumber rilis tanpa terhambat batas kuota (*rate-limit*) GitHub API.

@@ -93,7 +93,7 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.6.0";
+        public const string APP_VERSION = "v1.6.1";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;
@@ -638,7 +638,8 @@ namespace NovaBrowser {
                 MessageBox.Show(this, "NovaLite Browser sudah dalam versi paling baru (" + APP_VERSION + ").", "Cek Pembaruan", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
                 statusUpdate.Text = "🔄 Cek Update";
-                MessageBox.Show(this, "Tidak dapat terhubung ke server pembaruan. Periksa koneksi internet Anda.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string errorDetail = !string.IsNullOrEmpty(UpdateManager.LastError) ? "\n\nDetail Error: " + UpdateManager.LastError : "";
+                MessageBox.Show(this, "Tidak dapat terhubung ke server pembaruan GitHub." + errorDetail + "\n\nPastikan koneksi internet aktif atau coba beberapa saat lagi.", "Info Pembaruan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

@@ -19,8 +19,20 @@ namespace NovaBrowser {
     public static class UpdateManager {
         public const string GITHUB_RELEASE_API = "https://api.github.com/repos/wandiapriliyandi/novabrowser/releases/latest";
         public const string VERSION_FALLBACK_URL = "https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json";
+        public static string LastError = "";
+
+        public static void EnsureSecurityProtocol() {
+            try {
+                // Mengaktifkan TLS 1.2 dan TLS 1.3 secara eksplisit agar koneksi HTTPS ke GitHub API dan raw GitHub berhasil
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | (SecurityProtocolType)12288 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                ServicePointManager.Expect100Continue = true;
+            } catch { }
+        }
 
         public static async Task<UpdateInfo> CheckForUpdatesAsync(string currentVersion) {
+            LastError = "";
+            EnsureSecurityProtocol();
+
             // 1. Coba periksa rilis terbaru melalui GitHub Release API Resmi
             try {
                 using (WebClient client = new WebClient()) {
@@ -63,15 +75,17 @@ namespace NovaBrowser {
                         }
                     }
                 }
-            } catch {
-                // Fallback ke version.json jika GitHub API rate-limited
+            } catch (Exception ex) {
+                LastError = "GitHub API: " + ex.Message;
+                // Fallback ke version.json jika GitHub API rate-limited atau bermasalah
             }
 
             // 2. Fallback: Periksa file version.json langsung di raw repository
             try {
                 using (WebClient client = new WebClient()) {
                     client.Headers.Add("User-Agent", "NovaBrowser-App/" + currentVersion);
-                    string json = await client.DownloadStringTaskAsync(new Uri(VERSION_FALLBACK_URL));
+                    string urlWithCacheBuster = VERSION_FALLBACK_URL + "?t=" + DateTime.UtcNow.Ticks;
+                    string json = await client.DownloadStringTaskAsync(new Uri(urlWithCacheBuster));
 
                     string remoteVer = ExtractJsonValue(json, "version");
                     string downloadUrl = ExtractJsonValue(json, "downloadUrl");
@@ -90,7 +104,9 @@ namespace NovaBrowser {
                         };
                     }
                 }
-            } catch { }
+            } catch (Exception ex) {
+                LastError = string.IsNullOrEmpty(LastError) ? ex.Message : LastError + " | Fallback: " + ex.Message;
+            }
 
             return null;
         }
@@ -140,6 +156,7 @@ namespace NovaBrowser {
             dlg.Controls.Add(lblStatus);
 
             dlg.Shown += async (s, e) => {
+                EnsureSecurityProtocol();
                 string currentExe = Application.ExecutablePath;
                 string appDir = AppDomain.CurrentDomain.BaseDirectory;
                 bool isSetup = downloadUrl.IndexOf("Setup", StringComparison.OrdinalIgnoreCase) >= 0;
