@@ -6,10 +6,23 @@ using System.Windows.Forms;
 
 namespace NovaBrowser {
     static class Program {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
+        private static extern bool SetDllDirectory(string lpPathName);
+
         [STAThread]
         static void Main(string[] args) {
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Daftarkan folder lib/ ke Windows native DLL search path (WebView2Loader.dll)
+            try {
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                string libPath = Path.Combine(appDir, "lib");
+                if (Directory.Exists(libPath)) {
+                    SetDllDirectory(libPath);
+                }
+            } catch { }
 
             // Handler cerdas untuk menemukan DLL WebView2 di folder lib/ meskipun tanpa file .config
             AppDomain.CurrentDomain.AssemblyResolve += (sender, resolveArgs) => {

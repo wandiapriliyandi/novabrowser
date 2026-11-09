@@ -157,8 +157,10 @@ namespace NovaBrowser {
 
             webView.CoreWebView2.ProcessFailed += (s, e) => {
                 try {
-                    // Pulihkan WebView jika ada renderer crash tanpa mematikan aplikasi utama
-                    webView.Reload();
+                    // Pulihkan WebView hanya jika renderer crash ringan tanpa mematikan browser jika proses utama sudah exit
+                    if (e.ProcessFailedKind != CoreWebView2ProcessFailedKind.BrowserProcessExited) {
+                        webView.Reload();
+                    }
                 } catch { }
             };
         }

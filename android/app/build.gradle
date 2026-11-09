@@ -10,8 +10,8 @@ android {
         applicationId "com.novalite.browser"
         minSdk 21
         targetSdk 34
-        versionCode 27
-        versionName "1.6.1"
+        versionCode 28
+        versionName "1.6.2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

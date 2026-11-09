@@ -1,8 +1,8 @@
 {
-  "version": "1.6.1",
-  "apkVersionCode": 27,
+  "version": "1.6.2",
+  "apkVersionCode": 28,
   "releaseDate": "2026-11-09",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "• Perbaikan Koneksi Update PC: Mengaktifkan TLS 1.2 / TLS 1.3 secara eksplisit di Windows sehingga pemeriksaan rilis GitHub tidak lagi gagal.\n• Detail Diagnostik Error: Menyediakan pesan diagnostik yang jelas jika koneksi server GitHub terhambat.\n• Sinkronisasi Rilis Stabil: Mendukung update mulus langsung dari GitHub Releases resmi."
+  "changelog": "• Perbaikan Penginstalan PC 1-Klik: Menghilangkan bug dobel event handler pada tombol installer sehingga proses pasang sekali jalan tanpa perlu klik berkali-kali.\n• Kestabilan Native WebView2Loader: Menyalin native DLL loader dan mendaftarkan direktori runtime secara otomatis untuk mencegah browser tertutup tiba-tiba (silent crash).\n• Perlindungan CoreWebView2 ProcessFailed: Mencegah kegagalan fatal saat subproses Chromium mengalami reload."
 }

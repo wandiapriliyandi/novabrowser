@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.6.1` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.6.2` (Desktop Installer & Android Edition)
 
 > **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, URL Autocomplete di HP, dan Sistem Pembaruan Otomatis Cerdas.**
 
-[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.6.2-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,16 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.6.1` (Rilis Saat Ini)
+### Versi `v1.6.2` (Rilis Saat Ini)
+* **Penyelesaian Masalah Pemasangan Sekali Jalan di PC Windows**:
+  - Mengeliminasi dobel event handler pada tombol `btnInstall` yang sebelumnya menyebabkan installer menjalankan ulang proses instalasi dan membunuh proses browser yang baru dibuka.
+  - Sekarang pemasangan 100% sekali jalan: klik *Pasang Sekarang* -> berkas diekstrak -> klik *Selesai (Buka Browser)* langsung membuka browser dan installer keluar dengan bersih.
+* **Pencegahan Browser Tertutup Sendiri (Anti-Silent Crash)**:
+  - Menyalin file `WebView2Loader.dll` native loader langsung ke samping `NovaBrowser.exe` dan menyalin subfolder `runtimes/`.
+  - Mendaftarkan folder `lib/` ke Windows native search path dengan `SetDllDirectory` saat startup.
+  - Memperbaiki event handler `ProcessFailed` pada `BrowserTab.cs` agar tidak memicu reload fatal saat browser process telah keluar.
+
+### Versi `v1.6.1`
 * **Perbaikan Koneksi Server Pembaruan di Windows PC (Fix SSL/TLS Handshake Error)**:
   - Mengatasi masalah pesan *"Tidak dapat terhubung ke server pembaruan"* saat mengklik tombol update di PC.
   - **Dukungan Wajib TLS 1.2 / TLS 1.3**: Mengaktifkan `ServicePointManager.SecurityProtocol` protokol keamanan modern secara eksplisit sehingga koneksi HTTPS ke GitHub Releases API (`api.github.com`) dan raw GitHub berhasil 100% tanpa ditolak server.

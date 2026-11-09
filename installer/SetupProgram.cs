@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 namespace NovaBrowser.Installer {
     static class SetupProgram {
-        public const string APP_VERSION = "v1.6.1";
+        public const string APP_VERSION = "v1.6.2";
 
         [STAThread]
         static void Main() {
@@ -36,6 +36,7 @@ namespace NovaBrowser.Installer {
         private Label lblInstallPath;
 
         private string installDir;
+        private bool isInstalled = false;
 
         public SetupForm() {
             this.Text = "NovaBrowser " + SetupProgram.APP_VERSION + " Setup";
@@ -150,7 +151,18 @@ namespace NovaBrowser.Installer {
                 Cursor = Cursors.Hand
             };
             btnInstall.FlatAppearance.BorderSize = 0;
-            btnInstall.Click += async (s, e) => await StartInstallation();
+            btnInstall.Click += async (s, e) => {
+                if (isInstalled) {
+                    string mainExe = Path.Combine(installDir, "NovaBrowser.exe");
+                    if (chkLaunchNow.Checked && File.Exists(mainExe)) {
+                        LaunchAppAndExit(mainExe, installDir);
+                    } else {
+                        Application.Exit();
+                    }
+                    return;
+                }
+                await StartInstallation();
+            };
 
             pnlContent.Controls.Add(lblPathTitle);
             pnlContent.Controls.Add(lblInstallPath);
@@ -218,6 +230,24 @@ namespace NovaBrowser.Installer {
                     }
                 }
 
+                // Pastikan native WebView2Loader.dll dan folder runtimes ada langsung di root instalasi
+                try {
+                    string loaderSource = Environment.Is64BitOperatingSystem
+                        ? Path.Combine(installDir, "lib", "runtimes", "win-x64", "native", "WebView2Loader.dll")
+                        : Path.Combine(installDir, "lib", "runtimes", "win-x86", "native", "WebView2Loader.dll");
+
+                    string loaderTarget = Path.Combine(installDir, "WebView2Loader.dll");
+                    if (File.Exists(loaderSource) && !File.Exists(loaderTarget)) {
+                        File.Copy(loaderSource, loaderTarget, true);
+                    }
+
+                    string runtimesSource = Path.Combine(installDir, "lib", "runtimes");
+                    string runtimesTarget = Path.Combine(installDir, "runtimes");
+                    if (Directory.Exists(runtimesSource) && !Directory.Exists(runtimesTarget)) {
+                        CopyDirectoryRecursive(runtimesSource, runtimesTarget);
+                    }
+                } catch { }
+
                 string mainExe = Path.Combine(installDir, "NovaBrowser.exe");
                 string appIco = Path.Combine(installDir, "app.ico");
 
@@ -245,19 +275,12 @@ namespace NovaBrowser.Installer {
                 lblStatus.Text = "Mendaftarkan program ke sistem Windows...";
                 RegisterUninstallEntry(installDir, mainExe);
 
+                isInstalled = true;
                 lblStatus.Text = "Pemasangan selesai! Silakan klik tombol di bawah untuk membuka.";
                 progressBar.Visible = false;
                 btnInstall.Text = "Selesai (Buka Browser)";
                 btnInstall.BackColor = Color.FromArgb(5, 150, 105);
                 btnInstall.Enabled = true;
-
-                btnInstall.Click += (s, e) => {
-                    if (chkLaunchNow.Checked && File.Exists(mainExe)) {
-                        LaunchAppAndExit(mainExe, installDir);
-                    } else {
-                        Application.Exit();
-                    }
-                };
             } catch (Exception ex) {
                 progressBar.Visible = false;
                 btnInstall.Enabled = true;
