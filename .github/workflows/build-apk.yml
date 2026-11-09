@@ -40,13 +40,19 @@ jobs:
         run: |
           VERSION=$(grep 'versionName' android/app/build.gradle | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
           if [ -z "$VERSION" ]; then
-            VERSION="1.5.8"
+            VERSION="1.6.0"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected App Version: $VERSION"
 
           cp android/app/build/outputs/apk/debug/app-debug.apk "android/app/build/outputs/apk/debug/NovaBrowser-v${VERSION}.apk"
           ls -la android/app/build/outputs/apk/debug/
+
+          # Ekstrak changelog dinamis dari version.json
+          CHANGELOG=$(python3 -c "import json; data=json.load(open('version.json')); print(data.get('changelog', 'Pembaruan stabilitas dan performa.'))" 2>/dev/null || jq -r '.changelog' version.json 2>/dev/null || echo "Pembaruan stabilitas dan performa.")
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
@@ -74,16 +80,13 @@ jobs:
           body: |
             ## 🚀 NovaBrowser v${{ steps.get_version.outputs.VERSION }} Rilis Resmi
 
+            ### 📢 Catatan Rilis & Yang Baru:
+            ${{ steps.get_version.outputs.CHANGELOG }}
+
             ### 📦 File Unduhan Langsung:
             - **Windows (Setup Installer)**: `NovaBrowserSetup.exe` (Pemasangan mudah 1-klik dengan shortcut Desktop & Start Menu otomatis)
             - **Windows (Executable Saja)**: `NovaBrowser.exe` (Untuk pembaruan otomatis in-place)
             - **Android (APK)**: `NovaBrowser-v${{ steps.get_version.outputs.VERSION }}.apk`
-
-            ### ✨ Fitur Utama:
-            - **Windows Setup Installer**: Instalasi otomatis dan bersih tanpa perlu konfigurasi folder manual.
-            - **Multi-Tab Android Modern**: Desain kartu tab interaktif, indikator aktif, dan tutup cepat.
-            - **Auto-Update Resmi via GitHub Releases**: Pembaruan otomatis langsung dari aplikasi.
-            - **Ultra Ringan & Cepat**: Konsumsi RAM dan baterai sangat hemat berbasis Chromium WebView2.
           files: |
             android/app/build/outputs/apk/debug/NovaBrowser-v*.apk
             NovaBrowserSetup.exe

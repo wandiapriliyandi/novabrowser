@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.5.9` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.6.0` (Desktop Installer & Android Edition)
 
-> **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, URL Autocomplete di HP, dan Sistem Pembaruan Otomatis.**
+> **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, URL Autocomplete di HP, dan Sistem Pembaruan Otomatis Cerdas.**
 
-[![Version](https://img.shields.io/badge/version-1.5.9-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,14 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.5.9` (Rilis Saat Ini)
+### Versi `v1.6.0` (Rilis Saat Ini)
+* **Sistem Catatan Rilis Dinamis di HP Android**:
+  - Mengatasi masalah catatan rilis yang statis / "itu-itu saja" saat notifikasi update muncul di HP.
+  - **Sinkronisasi Langsung ke `version.json`**: Dialog update di HP kini membaca changelog terbaru yang spesifik dan akurat langsung dari sumber rilis tanpa terhambat batas kuota (*rate-limit*) GitHub API.
+  - **Pembersihan Konten Otomatis (`cleanChangelog`)**: Menyaring dan memotong teks template desktop yang tidak relevan sehingga pengguna HP hanya membaca apa yang benar-benar baru di versi tersebut.
+  - **Otomasi Rilis GitHub CI Dinamis**: Memperbarui workflow GitHub Actions agar body rilis GitHub Releases otomatis mengambil catatan rilis versi terkait secara dinamis.
+
+### Versi `v1.5.9`
 * **Omnibox URL Autocomplete Cerdas di HP Android**:
   - Menggantikan kolom input biasa dengan `AutoCompleteTextView` bertema gelap modern (`#1E293B`).
   - **Saran Riwayat Kunjungan Otomatis**: Secara otomatis mengingat dan menyarankan URL website yang pernah dikunjungi pengguna dengan prioritas teratas.

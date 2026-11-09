@@ -93,7 +93,7 @@ namespace NovaBrowser {
             }
         }
 
-        public const string APP_VERSION = "v1.5.9";
+        public const string APP_VERSION = "v1.6.0";
 
         public MainForm(string initialUrl = null, bool appMode = false) {
             this.IsAppMode = appMode;

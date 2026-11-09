@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 namespace NovaBrowser.Installer {
     static class SetupProgram {
-        public const string APP_VERSION = "v1.5.9";
+        public const string APP_VERSION = "v1.6.0";
 
         [STAThread]
         static void Main() {

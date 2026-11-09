@@ -754,19 +754,74 @@ public class MainActivity extends Activity {
         wv.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
     }
 
+    private String cleanChangelog(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return "Pembaruan performa dan perbaikan bug.";
+        }
+
+        String text = raw;
+        // Jika ada section "Catatan Rilis" atau "Yang Baru", ambil bagian tersebut
+        if (text.contains("Catatan Rilis") || text.contains("Yang Baru")) {
+            int startIdx = text.indexOf("Catatan Rilis");
+            if (startIdx == -1) startIdx = text.indexOf("Yang Baru");
+
+            int lineEnd = text.indexOf("\n", startIdx);
+            if (lineEnd != -1) {
+                text = text.substring(lineEnd + 1);
+            } else {
+                text = text.substring(startIdx);
+            }
+
+            int nextSection = text.indexOf("### ");
+            if (nextSection != -1) {
+                text = text.substring(0, nextSection);
+            }
+        }
+
+        text = text.replace("##", "")
+                   .replace("**", "")
+                   .replace("__", "")
+                   .trim();
+
+        return text.isEmpty() ? raw.trim() : text;
+    }
+
     private void checkForUpdates(boolean isManual) {
         new Thread(() -> {
             String latestVersion = "";
             String changelog = "";
             String apkUrl = "https://github.com/wandiapriliyandi/novabrowser/releases/latest";
 
-            // 1. Coba periksa via GitHub Releases API Resmi
+            // 1. Ambil data versi & changelog spesifik langsung dari version.json (anti rate-limit dan selalu spesifik)
+            try {
+                URL vUrl = new URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
+                HttpURLConnection vConn = (HttpURLConnection) vUrl.openConnection();
+                vConn.setConnectTimeout(5000);
+                vConn.setReadTimeout(5000);
+                vConn.setRequestProperty("User-Agent", "NovaBrowser-Android");
+
+                if (vConn.getResponseCode() == 200) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(vConn.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    reader.close();
+
+                    JSONObject vJson = new JSONObject(sb.toString());
+                    latestVersion = vJson.optString("version", "").replace("v", "");
+                    changelog = vJson.optString("changelog", "");
+                    apkUrl = vJson.optString("apkDownloadUrl", apkUrl);
+                }
+            } catch (Exception ignored) { }
+
+            // 2. Cek GitHub Releases API resmi untuk memastikan rilis APK terbaru dan download URL langsung
             try {
                 URL url = new URL("https://api.github.com/repos/wandiapriliyandi/novabrowser/releases/latest");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(6000);
-                conn.setReadTimeout(6000);
-                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
                 conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
                 conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
 
@@ -775,15 +830,23 @@ public class MainActivity extends Activity {
                     StringBuilder sb = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line);
+                        sb.append(line).append("\n");
                     }
                     reader.close();
 
                     JSONObject json = new JSONObject(sb.toString());
-                    latestVersion = json.optString("tag_name", "").replace("v", "");
-                    changelog = json.optString("body", "Pembaruan GitHub Release terbaru.");
+                    String ghVersion = json.optString("tag_name", "").replace("v", "");
+                    if (!ghVersion.isEmpty()) {
+                        latestVersion = ghVersion;
+                    }
 
-                    // Cari asset file APK
+                    // Jika version.json belum terisi changelog, ambil dari body GitHub Release yang dibersihkan
+                    if (changelog == null || changelog.trim().isEmpty()) {
+                        String ghBody = json.optString("body", "");
+                        changelog = cleanChangelog(ghBody);
+                    }
+
+                    // Cari direct asset file APK
                     JSONArray assets = json.optJSONArray("assets");
                     if (assets != null) {
                         for (int i = 0; i < assets.length(); i++) {
@@ -798,42 +861,19 @@ public class MainActivity extends Activity {
                 }
             } catch (Exception ignored) { }
 
-            // 2. Fallback jika GitHub API rate-limited
             if (latestVersion == null || latestVersion.isEmpty()) {
-                try {
-                    URL url = new URL("https://raw.githubusercontent.com/wandiapriliyandi/novabrowser/main/version.json?t=" + System.currentTimeMillis());
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(6000);
-                    conn.setReadTimeout(6000);
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
-
-                    if (conn.getResponseCode() == 200) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        StringBuilder sb = new StringBuilder();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            sb.append(line);
-                        }
-                        reader.close();
-
-                        JSONObject json = new JSONObject(sb.toString());
-                        latestVersion = json.optString("version", "");
-                        changelog = json.optString("changelog", "Pembaruan stabilitas dan performa.");
-                        apkUrl = json.optString("apkDownloadUrl", apkUrl);
-                    }
-                } catch (Exception ex) {
-                    if (isManual) {
-                        runOnUiThread(() -> Toast.makeText(this, "Koneksi update gagal: " + ex.getMessage(), Toast.LENGTH_SHORT).show());
-                    }
-                    return;
+                if (isManual) {
+                    runOnUiThread(() -> Toast.makeText(this, "Tidak dapat memeriksa pembaruan: server tidak merespons.", Toast.LENGTH_SHORT).show());
                 }
+                return;
             }
 
             try {
                 String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
                 final String finalVersion = latestVersion;
-                final String finalChangelog = changelog;
+                final String finalChangelog = (changelog != null && !changelog.trim().isEmpty())
+                        ? changelog.trim()
+                        : "Pembaruan performa dan peningkatan stabilitas.";
                 final String finalApkUrl = apkUrl;
 
                 if (isNewerVersion(finalVersion, currentVersion)) {
@@ -872,8 +912,8 @@ public class MainActivity extends Activity {
 
         try {
             new AlertDialog.Builder(this)
-                    .setTitle("🚀 Pembaruan APK Tersedia (v" + newVersion + ")")
-                    .setMessage("Versi terbaru NovaBrowser telah dirilis!\n\nCatatan Rilis:\n" + changelog + "\n\nUnduh file APK terbaru sekarang?")
+                    .setTitle("🚀 Pembaruan Tersedia (v" + newVersion + ")")
+                    .setMessage("Versi terbaru NovaBrowser telah dirilis!\n\n📢 Apa yang Baru:\n" + changelog + "\n\nUnduh dan pasang file APK terbaru sekarang?")
                     .setPositiveButton("Unduh APK", (dialog, which) -> {
                         try {
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl));

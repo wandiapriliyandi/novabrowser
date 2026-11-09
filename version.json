@@ -1,8 +1,8 @@
 {
-  "version": "1.5.9",
-  "apkVersionCode": 25,
+  "version": "1.6.0",
+  "apkVersionCode": 26,
   "releaseDate": "2026-11-09",
   "downloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest/download/NovaBrowserSetup.exe",
   "apkDownloadUrl": "https://github.com/wandiapriliyandi/novabrowser/releases/latest",
-  "changelog": "v1.5.9: Fitur URL Autocomplete cerdas di Android dengan saran riwayat kunjungan, top domain / localhost, dan rekomendasi Google Suggest."
+  "changelog": "• Catatan Rilis Dinamis: Dialog update di HP kini selalu menampilkan fitur baru secara nyata dan spesifik sesuai rilis terkini.\n• URL Autocomplete di HP: Bilah alamat Android kini menyarankan riwayat kunjungan, website populer, dan kueri Google secara instan.\n• Pembersihan Rilis Mobile: Membuang teks template desktop yang tidak relevan dari layar notifikasi pembaruan HP."
 }
