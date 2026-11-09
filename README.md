@@ -1,8 +1,8 @@
-# ⚡ NovaBrowser `v1.5.8` (Desktop Installer & Android Edition)
+# ⚡ NovaBrowser `v1.5.9` (Desktop Installer & Android Edition)
 
-> **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, dan Sistem Pembaruan Otomatis.**
+> **Peramban Desktop Super Cepat, Ringan & Modern dengan Setup Installer 1-Klik (`NovaBrowserSetup.exe`), Berbasis Windows Native WebView2 (Chromium Core), dengan Dukungan Penuh Mode Developer, Alat Pentest/Keamanan, Simpan Sandi, Multi-Tab Android, URL Autocomplete di HP, dan Sistem Pembaruan Otomatis.**
 
-[![Version](https://img.shields.io/badge/version-1.5.8-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-1.5.9-blue.svg)](README.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-green.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 
@@ -10,7 +10,15 @@
 
 ## 📝 Catatan Rilis (Changelog)
 
-### Versi `v1.5.8` (Rilis Saat Ini)
+### Versi `v1.5.9` (Rilis Saat Ini)
+* **Omnibox URL Autocomplete Cerdas di HP Android**:
+  - Menggantikan kolom input biasa dengan `AutoCompleteTextView` bertema gelap modern (`#1E293B`).
+  - **Saran Riwayat Kunjungan Otomatis**: Secara otomatis mengingat dan menyarankan URL website yang pernah dikunjungi pengguna dengan prioritas teratas.
+  - **Katalog Domain Populer & Localhost**: Menyarankan langsung situs top dunia (Google, YouTube, GitHub, Wikipedia, ChatGPT, dll) serta alamat pengembangan lokal (`localhost:80`, `localhost:3000`, `localhost:5173`, `localhost:8080`, `localhost:8000`, `127.0.0.1`).
+  - **Live Google Search Suggestion**: Menampilkan rekomendasi kata kunci pencarian Google secara instan saat mengetik.
+  - **Navigasi 1-Ketukan Cepat**: Mengetuk saran langsung memuat halaman, menutup keyboard virtual, dan menyembunyikan dropdown secara mulus.
+
+### Versi `v1.5.8`
 * **Safe-Extract Installer (Anti File Lock Error)**: Menambahkan mekanisme retry cerdas dan fallback *move to `.old`* pada installer setup Windows jika file lama sedang terkunci oleh proses yang berjalan, memastikan proses install 100% selalu berhasil.
 * **Dual-Engine Desktop Shortcut Creator**: Menyediakan fallback ganda otomatis (WScript.Shell COM + PowerShell) untuk pembuatan pintasan di Desktop.
 

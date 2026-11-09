@@ -2,7 +2,9 @@ package com.novalite.browser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -11,16 +13,20 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,7 +41,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends Activity {
@@ -54,8 +63,217 @@ public class MainActivity extends Activity {
         }
     }
 
+    public static class SuggestionItem {
+        public final String text;
+        public final boolean isUrl;
+
+        public SuggestionItem(String text, boolean isUrl) {
+            this.text = text;
+            this.isUrl = isUrl;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
+
+    public static class OmniboxSuggestAdapter extends BaseAdapter implements Filterable {
+        private final Context context;
+        private final List<SuggestionItem> items = new ArrayList<>();
+        private final List<String> historyList;
+        private final List<String> defaultUrls;
+
+        public OmniboxSuggestAdapter(Context context, List<String> historyList, List<String> defaultUrls) {
+            this.context = context;
+            this.historyList = historyList;
+            this.defaultUrls = defaultUrls;
+        }
+
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+
+        @Override
+        public SuggestionItem getItem(int position) {
+            return items.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).inflate(R.layout.item_autocomplete_suggestion, parent, false);
+            }
+            SuggestionItem item = getItem(position);
+            TextView txtIcon = convertView.findViewById(R.id.txtSuggestionIcon);
+            TextView txtText = convertView.findViewById(R.id.txtSuggestionText);
+
+            if (txtIcon != null) {
+                txtIcon.setText(item.isUrl ? "🌐" : "🔍");
+            }
+            if (txtText != null) {
+                txtText.setText(item.text);
+            }
+
+            return convertView;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults results = new FilterResults();
+                    if (constraint == null || constraint.toString().trim().isEmpty()) {
+                        results.values = new ArrayList<SuggestionItem>();
+                        results.count = 0;
+                        return results;
+                    }
+
+                    String query = constraint.toString().trim().toLowerCase();
+                    List<SuggestionItem> filtered = new ArrayList<>();
+                    Set<String> added = new HashSet<>();
+
+                    // 1. Cek riwayat lokal pengguna (prioritas tertinggi)
+                    synchronized (historyList) {
+                        for (String h : historyList) {
+                            if (h.toLowerCase().contains(query)) {
+                                if (added.add(h)) {
+                                    filtered.add(new SuggestionItem(h, true));
+                                    if (filtered.size() >= 6) break;
+                                }
+                            }
+                        }
+                    }
+
+                    // 2. Cek situs populer default & localhost
+                    for (String d : defaultUrls) {
+                        if (d.toLowerCase().contains(query)) {
+                            if (added.add(d)) {
+                                filtered.add(new SuggestionItem(d, true));
+                                if (filtered.size() >= 10) break;
+                            }
+                        }
+                    }
+
+                    // 3. Jika bukan URL langsung, ambil saran Google Suggest real-time
+                    if (!query.contains(".") && !query.startsWith("http") && !query.startsWith("localhost")) {
+                        List<String> googleList = fetchGoogleSuggestions(query);
+                        for (String s : googleList) {
+                            if (added.add(s)) {
+                                filtered.add(new SuggestionItem(s, false));
+                                if (filtered.size() >= 12) break;
+                            }
+                        }
+                    }
+
+                    results.values = filtered;
+                    results.count = filtered.size();
+                    return results;
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    items.clear();
+                    if (results != null && results.values != null) {
+                        items.addAll((List<SuggestionItem>) results.values);
+                    }
+                    notifyDataSetChanged();
+                }
+
+                @Override
+                public CharSequence convertResultToString(Object resultValue) {
+                    if (resultValue instanceof SuggestionItem) {
+                        return ((SuggestionItem) resultValue).text;
+                    }
+                    return super.convertResultToString(resultValue);
+                }
+            };
+        }
+
+        private List<String> fetchGoogleSuggestions(String query) {
+            List<String> list = new ArrayList<>();
+            try {
+                String encoded = URLEncoder.encode(query, "UTF-8");
+                URL url = new URL("https://suggestqueries.google.com/complete/search?client=chrome&q=" + encoded);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(1200);
+                conn.setReadTimeout(1200);
+                conn.setRequestProperty("User-Agent", "NovaBrowser-Android");
+                if (conn.getResponseCode() == 200) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    reader.close();
+                    JSONArray root = new JSONArray(sb.toString());
+                    if (root.length() > 1) {
+                        JSONArray suggestions = root.getJSONArray(1);
+                        for (int i = 0; i < suggestions.length() && i < 5; i++) {
+                            list.add(suggestions.getString(i));
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+            return list;
+        }
+    }
+
+    private static final String PREFS_NAME = "novalite_prefs";
+    private static final String KEY_HISTORY = "url_history";
+    private final List<String> historyList = new ArrayList<>();
+
+    private final List<String> defaultUrls = Arrays.asList(
+            "google.com",
+            "https://google.com",
+            "youtube.com",
+            "https://youtube.com",
+            "github.com",
+            "https://github.com",
+            "chatgpt.com",
+            "https://chatgpt.com",
+            "wikipedia.org",
+            "https://wikipedia.org",
+            "stackoverflow.com",
+            "https://stackoverflow.com",
+            "reddit.com",
+            "https://reddit.com",
+            "twitter.com",
+            "https://x.com",
+            "instagram.com",
+            "https://instagram.com",
+            "facebook.com",
+            "https://facebook.com",
+            "detik.com",
+            "https://detik.com",
+            "kompas.com",
+            "https://kompas.com",
+            "http://localhost:80",
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8000",
+            "http://localhost:8080",
+            "localhost:80",
+            "localhost:3000",
+            "localhost:5173",
+            "localhost:8000",
+            "localhost:8080",
+            "127.0.0.1:8000",
+            "127.0.0.1:3000"
+    );
+
     private FrameLayout webViewContainer;
-    private EditText txtUrl;
+    private AutoCompleteTextView txtUrl;
+    private OmniboxSuggestAdapter suggestAdapter;
     private ProgressBar progressBar;
     private Button btnBack;
     private Button btnClear;
@@ -76,7 +294,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadHistory();
         initViews();
+        setupOmnibox();
         setupListeners();
 
         // Buka tab pertama
@@ -84,6 +304,46 @@ public class MainActivity extends Activity {
 
         // Cek pembaruan APK otomatis di latar belakang setelah 3.5 detik
         webViewContainer.postDelayed(() -> checkForUpdates(false), 3500);
+    }
+
+    private void loadHistory() {
+        try {
+            SharedPreferences sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            String jsonStr = sp.getString(KEY_HISTORY, "[]");
+            JSONArray arr = new JSONArray(jsonStr);
+            synchronized (historyList) {
+                historyList.clear();
+                for (int i = 0; i < arr.length(); i++) {
+                    historyList.add(arr.getString(i));
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void saveToHistory(String url) {
+        if (url == null || url.trim().isEmpty() ||
+                url.equals("novalite://newtab") ||
+                url.equals("about:blank") ||
+                url.startsWith("data:")) return;
+
+        url = url.trim();
+        synchronized (historyList) {
+            historyList.remove(url);
+            historyList.add(0, url);
+            if (historyList.size() > 100) {
+                historyList.remove(historyList.size() - 1);
+            }
+            try {
+                JSONArray arr = new JSONArray();
+                for (String u : historyList) {
+                    arr.put(u);
+                }
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                        .edit()
+                        .putString(KEY_HISTORY, arr.toString())
+                        .apply();
+            } catch (Exception ignored) {}
+        }
     }
 
     private void initViews() {
@@ -97,6 +357,29 @@ public class MainActivity extends Activity {
         btnReload = findViewById(R.id.btnReload);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnDesktop = findViewById(R.id.btnDesktop);
+    }
+
+    private void setupOmnibox() {
+        suggestAdapter = new OmniboxSuggestAdapter(this, historyList, defaultUrls);
+        txtUrl.setAdapter(suggestAdapter);
+        txtUrl.setThreshold(1);
+        try {
+            txtUrl.setDropDownBackgroundResource(R.drawable.bg_autocomplete_dropdown);
+        } catch (Exception ignored) {}
+    }
+
+    private void hideSoftKeyboard() {
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                View focus = getCurrentFocus();
+                if (focus != null) {
+                    imm.hideSoftInputFromWindow(focus.getWindowToken(), 0);
+                } else if (txtUrl != null) {
+                    imm.hideSoftInputFromWindow(txtUrl.getWindowToken(), 0);
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private WebView getActiveWebView() {
@@ -164,7 +447,7 @@ public class MainActivity extends Activity {
                 tab.url = pageUrl;
                 if (getActiveTab() == tab) {
                     progressBar.setVisibility(View.VISIBLE);
-                    txtUrl.setText(pageUrl.equals("novalite://newtab") ? "" : pageUrl);
+                    txtUrl.setText(pageUrl.equals("novalite://newtab") ? "" : pageUrl, false);
                 }
             }
 
@@ -172,9 +455,10 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView view, String pageUrl) {
                 super.onPageFinished(view, pageUrl);
                 tab.url = pageUrl;
+                saveToHistory(pageUrl);
                 if (getActiveTab() == tab) {
                     progressBar.setVisibility(View.GONE);
-                    txtUrl.setText(pageUrl.equals("novalite://newtab") ? "" : pageUrl);
+                    txtUrl.setText(pageUrl.equals("novalite://newtab") ? "" : pageUrl, false);
                 }
             }
         });
@@ -236,7 +520,7 @@ public class MainActivity extends Activity {
         activeTabIndex = index;
         TabModel current = tabs.get(index);
         String currentUrl = current.url;
-        txtUrl.setText(currentUrl.equals("novalite://newtab") ? "" : currentUrl);
+        txtUrl.setText(currentUrl.equals("novalite://newtab") ? "" : currentUrl, false);
         updateTabsButtonCount();
     }
 
@@ -297,7 +581,6 @@ public class MainActivity extends Activity {
             TabModel t = tabs.get(i);
 
             View card = getLayoutInflater().inflate(R.layout.item_tab_card, container, false);
-
             TextView txtTabBadge = card.findViewById(R.id.txtTabBadge);
             TextView txtTabTitle = card.findViewById(R.id.txtTabTitle);
             TextView txtActiveIndicator = card.findViewById(R.id.txtActiveIndicator);
@@ -385,10 +668,24 @@ public class MainActivity extends Activity {
             public void afterTextChanged(Editable s) {}
         });
 
+        txtUrl.setOnItemClickListener((parent, view, position, id) -> {
+            SuggestionItem item = (SuggestionItem) parent.getItemAtPosition(position);
+            if (item != null) {
+                txtUrl.setText(item.text, false);
+                txtUrl.setSelection(item.text.length());
+                navigateTo(item.text);
+                hideSoftKeyboard();
+                txtUrl.dismissDropDown();
+            }
+        });
+
         txtUrl.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO ||
                 (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                navigateTo(txtUrl.getText().toString().trim());
+                String input = txtUrl.getText().toString().trim();
+                navigateTo(input);
+                hideSoftKeyboard();
+                txtUrl.dismissDropDown();
                 return true;
             }
             return false;
@@ -400,6 +697,7 @@ public class MainActivity extends Activity {
         if (wv == null || input == null || input.isEmpty()) return;
 
         input = input.trim();
+        saveToHistory(input);
         String url;
 
         if (input.startsWith("http://") || input.startsWith("https://") || input.startsWith("file:///")) {

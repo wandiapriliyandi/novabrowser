@@ -24,7 +24,7 @@
             android:background="#334155"
             android:textSize="11sp" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/txtUrl"
             android:layout_width="0dp"
             android:layout_height="38dp"
@@ -40,7 +40,10 @@
             android:paddingEnd="8dp"
             android:singleLine="true"
             android:imeOptions="actionGo"
-            android:inputType="textUri" />
+            android:inputType="textUri"
+            android:completionThreshold="1"
+            android:dropDownWidth="match_parent"
+            android:dropDownVerticalOffset="4dp" />
 
         <Button
             android:id="@+id/btnClear"
